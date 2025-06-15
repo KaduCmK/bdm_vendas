@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "477333041935",
+    "project_id": "bar-do-malhado",
+    "storage_bucket": "bar-do-malhado.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:477333041935:android:191a5f7a1533fc8787847a",
+        "android_client_info": {
+          "package_name": "io.github.kaducmk.bdm_vendas"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhgjNu7qwoWzYaWDUee5jhrkqq2V-yJEY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

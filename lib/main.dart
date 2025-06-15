@@ -1,7 +1,16 @@
+import 'package:bdm_vendas/firebase_options.dart';
+import 'package:bdm_vendas/service_locator.dart';
 import 'package:bdm_vendas/ui/web/screens/dashboard.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  setupLocator();
+
   runApp(const MyApp());
 }
 

@@ -33,9 +33,10 @@ class _DashboardState extends State<Dashboard> {
               });
             },
             labelType: NavigationRailLabelType.all,
-            leading: FloatingActionButton(
+            leading: FloatingActionButton.extended(
               onPressed: () {},
-              child: const Icon(Icons.add),
+              icon: const Icon(Icons.add),
+              label: const Text("Nova Nota"),
             ),
             destinations: [
               NavigationRailDestination(
