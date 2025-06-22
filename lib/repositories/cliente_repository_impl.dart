@@ -5,18 +5,17 @@ import '../models/cliente.dart';
 class ClienteRepositoryImpl extends ClienteRepository {
   final _firestore = FirebaseFirestore.instance;
 
-  // Pega uma "foto" em tempo real da coleção de clientes
+  // Carrega a lista completa de clientes do Firestore uma única vez.
   @override
-  Stream<List<Cliente>> getClientes() {
-    return _firestore
+  Future<List<Cliente>> getClientes() async {
+    final snapshot = await _firestore
         .collection('clientes')
         .orderBy('nome') // Opcional: ordena por nome
-        .snapshots()
-        .map((snapshot) {
-      return snapshot.docs
-          .map((doc) => Cliente.fromMap(doc.id, doc.data()))
-          .toList();
-    });
+        .get();
+        
+    return snapshot.docs
+        .map((doc) => Cliente.fromMap(doc.id, doc.data()))
+        .toList();
   }
 
   // Adiciona um novo cliente

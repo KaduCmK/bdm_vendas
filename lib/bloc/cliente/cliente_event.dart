@@ -17,12 +17,3 @@ class AddCliente extends ClienteEvent {
   @override
   List<Object> get props => [nome];
 }
-
-class _ClientesUpdated extends ClienteEvent {
-  final List<Cliente> clientes;
-
-  const _ClientesUpdated(this.clientes);
-
-  @override
-  List<Object> get props => [clientes];
-}

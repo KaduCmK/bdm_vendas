@@ -1,6 +1,7 @@
 import 'package:bdm_vendas/bloc/cliente/cliente_bloc.dart';
 import 'package:bdm_vendas/repositories/cliente_repository.dart';
 import 'package:bdm_vendas/service_locator.dart';
+import 'package:bdm_vendas/ui/web/screens/components/novo_cliente_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -42,7 +43,11 @@ class ClientesScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 8),
             child: FloatingActionButton.extended(
-              onPressed: () {},
+              onPressed:
+                  () => showDialog(
+                    context: context,
+                    builder: (_) => NovoClienteDialog(),
+                  ),
               icon: const Icon(Icons.add),
               label: const Text("Novo Cliente"),
             ),
