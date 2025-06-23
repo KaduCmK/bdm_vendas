@@ -1,7 +1,5 @@
 import 'package:bdm_vendas/bloc/cliente/cliente_bloc.dart';
-import 'package:bdm_vendas/repositories/cliente_repository.dart';
-import 'package:bdm_vendas/service_locator.dart';
-import 'package:bdm_vendas/ui/web/screens/components/novo_cliente_dialog.dart';
+import 'package:bdm_vendas/ui/web/screens/clientes/novo_cliente_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -11,27 +9,21 @@ class ClientesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<ClienteBloc>(
-      create:
-          (_) =>
-              ClienteBloc(repository: sl<ClienteRepository>())
-                ..add(LoadClientes()),
-      child: BlocBuilder<ClienteBloc, ClienteState>(
-        builder: (context, state) {
-          if (state is ClienteLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (state is ClienteError) {
-            return Center(child: Text(state.message));
-          }
-
-          if (state is ClienteLoaded) {
-            return _buildContent(context, state);
-          }
-
-          return const Center(child: Text("Inicializando"));
-        },
-      ),
+    return BlocBuilder<ClienteBloc, ClienteState>(
+      builder: (context, state) {
+        if (state is ClienteLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (state is ClienteError) {
+          return Center(child: Text(state.message));
+        }
+    
+        if (state is ClienteLoaded) {
+          return _buildContent(context, state);
+        }
+    
+        return const Center(child: Text("Inicializando"));
+      },
     );
   }
 

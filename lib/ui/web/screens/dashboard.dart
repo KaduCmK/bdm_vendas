@@ -1,6 +1,6 @@
-import 'package:bdm_vendas/ui/web/screens/clientes_screen.dart';
+import 'package:bdm_vendas/ui/web/screens/clientes/clientes_screen.dart';
 import 'package:bdm_vendas/ui/web/screens/notas_arquivadas_screen.dart';
-import 'package:bdm_vendas/ui/web/screens/notas_screen.dart';
+import 'package:bdm_vendas/ui/web/screens/notas/notas_screen.dart';
 import 'package:flutter/material.dart';
 
 class Dashboard extends StatefulWidget {
