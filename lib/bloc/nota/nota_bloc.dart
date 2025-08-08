@@ -1,0 +1,43 @@
+import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
+import 'package:bdm_vendas/models/nota.dart';
+import 'package:bdm_vendas/repositories/nota_repository.dart';
+import 'package:logger/logger.dart';
+
+part 'nota_event.dart';
+part 'nota_state.dart';
+
+class NotaBloc extends Bloc<NotaEvent, NotaState> {
+  final Logger _logger = Logger();
+  final NotaRepository _repository;
+
+  NotaBloc({required NotaRepository repository})
+    : _repository = repository,
+      super(NotaInitial()) {
+    on<LoadNotas>(_onLoadNotas);
+    on<AddNota>(_onAddNota);
+  }
+
+  void _onLoadNotas(LoadNotas event, Emitter<NotaState> emit) async {
+    emit(NotaLoading());
+    try {
+      final notas = await _repository.getNotas();
+      emit(NotaLoaded(notas));
+    } catch (e) {
+      emit(NotaError("Falha ao carregar notas: ${e.toString()}"));
+    }
+  }
+
+  void _onAddNota(AddNota event, Emitter<NotaState> emit) async {
+    try {
+      emit(NotaLoading());
+      await _repository.addNota(event.nota);
+      final newNotas = await _repository.getNotas();
+
+      emit(NotaLoaded(newNotas));
+    } catch (e) {
+      _logger.e(e.toString());
+      emit(NotaError("Falha ao adicionar nota: ${e.toString()}"));
+    }
+  }
+}

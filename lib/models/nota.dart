@@ -10,7 +10,7 @@ class Nota extends Equatable {
   const Nota({
     this.id,
     required this.dataCriacao,
-    required this.produtos,
+    this.produtos = const [],
     required this.clienteId,
   });
 

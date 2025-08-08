@@ -1,5 +1,7 @@
 // lib/service_locator.dart
 import 'package:bdm_vendas/repositories/cliente_repository.dart';
+import 'package:bdm_vendas/repositories/nota_repository.dart';
+import 'package:bdm_vendas/repositories/nota_repository_impl.dart';
 import 'package:get_it/get_it.dart';
 import 'package:bdm_vendas/repositories/cliente_repository_impl.dart';
 
@@ -9,4 +11,5 @@ final sl = GetIt.instance;
 void setupLocator() {
   // --- Repositórios ---
   sl.registerLazySingleton<ClienteRepository>(() => ClienteRepositoryImpl());
+  sl.registerLazySingleton<NotaRepository>(() => NotaRepositoryImpl());
 }

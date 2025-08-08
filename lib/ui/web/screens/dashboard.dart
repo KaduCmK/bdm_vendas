@@ -1,6 +1,7 @@
 import 'package:bdm_vendas/ui/web/screens/clientes/clientes_screen.dart';
-import 'package:bdm_vendas/ui/web/screens/notas_arquivadas_screen.dart';
 import 'package:bdm_vendas/ui/web/screens/notas/notas_screen.dart';
+import 'package:bdm_vendas/ui/web/screens/notas_arquivadas_screen.dart';
+import 'package:bdm_vendas/ui/web/screens/notas/nova_nota_dialog.dart';
 import 'package:flutter/material.dart';
 
 class Dashboard extends StatefulWidget {
@@ -34,28 +35,33 @@ class _DashboardState extends State<Dashboard> {
             },
             labelType: NavigationRailLabelType.all,
             leading: FloatingActionButton.extended(
-              onPressed: () {},
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => const NovaNotaDialog(),
+                );
+              },
               icon: const Icon(Icons.add),
               label: const Text("Nova Nota"),
             ),
-            destinations: [
+            destinations: const [
               NavigationRailDestination(
                 icon: Icon(Icons.description_outlined),
                 selectedIcon: Icon(Icons.description),
                 label: Text("Notas"),
-                padding: const EdgeInsets.symmetric(vertical: 4)
+                padding: EdgeInsets.symmetric(vertical: 4)
               ),
               NavigationRailDestination(
                 icon: Icon(Icons.archive_outlined),
                 selectedIcon: Icon(Icons.archive),
                 label: Text("Arquivadas"),
-                padding: const EdgeInsets.symmetric(vertical: 4)
+                padding: EdgeInsets.symmetric(vertical: 4)
               ),
               NavigationRailDestination(
                 icon: Icon(Icons.person_2_outlined),
                 selectedIcon: Icon(Icons.person_2),
                 label: Text("Clientes"),
-                padding: const EdgeInsets.symmetric(vertical: 4)
+                padding: EdgeInsets.symmetric(vertical: 4)
               ),
             ],
           ),
