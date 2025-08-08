@@ -2,50 +2,221 @@ import 'package:bdm_vendas/bloc/nota/nota_bloc.dart';
 import 'package:bdm_vendas/models/cliente.dart';
 import 'package:bdm_vendas/models/nota.dart';
 import 'package:bdm_vendas/models/produto.dart';
+import 'package:bdm_vendas/ui/shared/currency_input_formatter.dart';
+import 'package:bdm_vendas/ui/web/dialogs/fechar_conta_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // <<< IMPORTE ESTE PACOTE
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
-// <<< CLASSE DO FORMATADOR ADICIONADA AQUI >>>
-class CurrencyInputFormatter extends TextInputFormatter {
-  @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
-    if (newValue.selection.baseOffset == 0) {
-      return newValue;
-    }
-
-    // Remove tudo que não for dígito
-    String newText = newValue.text.replaceAll(RegExp(r'[^0-9]'), '');
-    double value = double.parse(newText);
-
-    final formatter = NumberFormat.currency(
-      locale: 'pt_BR',
-      symbol: '',
-      decimalDigits: 2,
-    );
-    String newString = formatter.format(value / 100);
-
-    return newValue.copyWith(
-      text: newString,
-      selection: TextSelection.collapsed(offset: newString.length),
-    );
-  }
-}
-
-class NotaCard extends StatefulWidget {
+class NotaCard extends StatelessWidget {
   final Nota nota;
   final Cliente? cliente;
   const NotaCard({super.key, required this.nota, this.cliente});
 
+  void _showFecharContaDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder:
+          (_) => BlocProvider.value(
+            value: BlocProvider.of<NotaBloc>(context),
+            child: FecharContaDialog(nota: nota),
+          ),
+    );
+  }
+
   @override
-  State<NotaCard> createState() => _NotaCardState();
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.all(8.0),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            _NotaCardHeader(cliente: cliente, nota: nota),
+            const Divider(),
+            _ProductListHeader(),
+            Expanded(child: _ProductList(nota: nota)),
+            const Divider(),
+            _AddProductRow(nota: nota),
+            const Divider(),
+            // <<< NOVO RODAPÉ AQUI >>>
+            Padding(
+              padding: const EdgeInsets.only(top: 12.0, left: 8.0, right: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    'Total: ${NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$').format(nota.total)}',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: () => _showFecharContaDialog(context),
+                    icon: const Icon(Icons.check_circle),
+                    label: const Text('Fechar a Conta'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
-class _NotaCardState extends State<NotaCard> {
+// Widgets internos refatorados para melhor organização
+class _NotaCardHeader extends StatelessWidget {
+  final Cliente? cliente;
+  final Nota nota;
+  const _NotaCardHeader({this.cliente, required this.nota});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: const CircleAvatar(child: Icon(Icons.person)),
+      title: Text(cliente?.nome ?? 'Cliente não encontrado'),
+      subtitle: Row(
+        children: [
+          const Icon(Icons.calendar_month, size: 16),
+          const SizedBox(width: 4),
+          Text(DateFormat('dd/MM/yyyy').format(nota.dataCriacao)),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProductListHeader extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+      child: Row(
+        children: [
+          SizedBox(width: 40),
+          Expanded(
+            flex: 6,
+            child: Text(
+              'Produto',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Text('Qtd.', style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
+          Expanded(
+            flex: 3,
+            child: Text('Preço', style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
+          Expanded(
+            flex: 3,
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                'Subtotal',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          SizedBox(width: 40),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProductList extends StatelessWidget {
+  final Nota nota;
+  const _ProductList({required this.nota});
+
+  void _removerProduto(BuildContext context, int index) {
+    final produtos = List<Produto>.from(nota.produtos)..removeAt(index);
+    final notaAtualizada = nota.copyWith(produtos: produtos);
+    context.read<NotaBloc>().add(UpdateNota(notaAtualizada));
+  }
+
+  void _incrementarQuantidade(BuildContext context, int index) {
+    final produtos = List<Produto>.from(nota.produtos);
+    final produto = produtos[index];
+    produtos[index] = produto.copyWith(quantidade: produto.quantidade + 1);
+    final notaAtualizada = nota.copyWith(produtos: produtos);
+    context.read<NotaBloc>().add(UpdateNota(notaAtualizada));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final formatadorReais = NumberFormat.currency(
+      locale: 'pt_BR',
+      symbol: 'R\$',
+    );
+    return ListView.builder(
+      itemCount: nota.produtos.length,
+      itemBuilder: (context, index) {
+        final produto = nota.produtos[index];
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 40,
+                child: IconButton(
+                  icon: const Icon(Icons.delete_outline),
+                  color: Colors.red,
+                  tooltip: 'Remover produto',
+                  onPressed: () => _removerProduto(context, index),
+                ),
+              ),
+              Expanded(flex: 6, child: Text(produto.nome)),
+              Expanded(flex: 2, child: Text('${produto.quantidade}')),
+              Expanded(
+                flex: 3,
+                child: Text(formatadorReais.format(produto.valorUnitario)),
+              ),
+              Expanded(
+                flex: 3,
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: Text(formatadorReais.format(produto.subtotal)),
+                ),
+              ),
+              SizedBox(
+                width: 40,
+                child: IconButton(
+                  icon: const Icon(Icons.add_circle_outline),
+                  onPressed: () => _incrementarQuantidade(context, index),
+                  tooltip: 'Adicionar um',
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _AddProductRow extends StatefulWidget {
+  final Nota nota;
+  const _AddProductRow({required this.nota});
+
+  @override
+  State<_AddProductRow> createState() => _AddProductRowState();
+}
+
+class _AddProductRowState extends State<_AddProductRow> {
   final _nomeController = TextEditingController();
   final _qtdController = TextEditingController(text: '1');
   final _precoController = TextEditingController();
@@ -61,7 +232,6 @@ class _NotaCardState extends State<NotaCard> {
   void _adicionarProduto() {
     final nome = _nomeController.text;
     final qtd = int.tryParse(_qtdController.text) ?? 1;
-    // <<< LÓGICA DE PARSE ATUALIZADA AQUI >>>
     final precoString = _precoController.text
         .replaceAll('.', '')
         .replaceAll(',', '.');
@@ -94,157 +264,8 @@ class _NotaCardState extends State<NotaCard> {
     FocusScope.of(context).unfocus();
   }
 
-  void _incrementarQuantidade(int index) {
-    final produto = widget.nota.produtos[index];
-    final produtos = List<Produto>.from(widget.nota.produtos);
-    produtos[index] = produto.copyWith(quantidade: produto.quantidade + 1);
-
-    final notaAtualizada = widget.nota.copyWith(produtos: produtos);
-    context.read<NotaBloc>().add(UpdateNota(notaAtualizada));
-  }
-
-  void _removerProduto(int index) {
-    final produtos = List<Produto>.from(widget.nota.produtos);
-    produtos.removeAt(index);
-    final notaAtualizada = widget.nota.copyWith(produtos: produtos);
-    context.read<NotaBloc>().add(UpdateNota(notaAtualizada));
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.all(8.0),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            ListTile(
-              leading: const CircleAvatar(child: Icon(Icons.person)),
-              title: Text(widget.cliente?.nome ?? 'Cliente não encontrado'),
-              subtitle: Row(
-                children: [
-                  const Icon(Icons.calendar_month, size: 16),
-                  const SizedBox(width: 4),
-                  Text(
-                    DateFormat('dd/MM/yyyy').format(widget.nota.dataCriacao),
-                  ),
-                ],
-              ),
-            ),
-            const Divider(),
-            _buildProductHeader(),
-            Expanded(
-              child: ListView.builder(
-                itemCount: widget.nota.produtos.length,
-                itemBuilder: (context, index) {
-                  return _buildProdutoRow(widget.nota.produtos[index], index);
-                },
-              ),
-            ),
-            const Divider(),
-            _buildAddProductRow(),
-            const SizedBox(height: 8),
-            Align(
-              alignment: Alignment.centerRight,
-              child: Text(
-                'Total: R\$ ${widget.nota.total.toStringAsFixed(2)}',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildProductHeader() {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-      child: Row(
-        children: [
-          SizedBox(width: 40),
-          Expanded(
-            flex: 6,
-            child: Text(
-              'Produto',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
-          Expanded(
-            flex: 2,
-            child: Text('Qtd.', style: TextStyle(fontWeight: FontWeight.bold)),
-          ),
-          Expanded(
-            flex: 3,
-            child: Text('Preço', style: TextStyle(fontWeight: FontWeight.bold)),
-          ),
-          SizedBox(width: 16),
-          Expanded(
-            flex: 3,
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: Text(
-                'Subtotal',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-          SizedBox(width: 40),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildProdutoRow(Produto produto, int index) {
-    final formatadorReais = NumberFormat.currency(
-      locale: 'pt_BR',
-      symbol: 'R\$',
-    );
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SizedBox(
-            width: 40,
-            child: IconButton(
-              icon: const Icon(Icons.delete_outline),
-              color: Colors.red,
-              tooltip: 'Remover produto',
-              onPressed: () => _removerProduto(index),
-            ),
-          ),
-          Expanded(flex: 6, child: Text(produto.nome)),
-          Expanded(flex: 2, child: Text('${produto.quantidade}')),
-          Expanded(
-            flex: 3,
-            child: Text(formatadorReais.format(produto.valorUnitario)),
-          ),
-          const SizedBox(width: 16, child: Center(child: Text("="))),
-          Expanded(
-            flex: 3,
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: Text(formatadorReais.format(produto.subtotal)),
-            ),
-          ),
-          SizedBox(
-            width: 40,
-            child: IconButton(
-              icon: const Icon(Icons.add_circle_outline),
-              onPressed: () => _incrementarQuantidade(index),
-              tooltip: 'Adicionar um',
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAddProductRow() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: Row(
@@ -283,7 +304,6 @@ class _NotaCardState extends State<NotaCard> {
                 prefixText: 'R\$ ',
               ),
               keyboardType: TextInputType.number,
-              // <<< FORMATADOR APLICADO AQUI >>>
               inputFormatters: [
                 FilteringTextInputFormatter.digitsOnly,
                 CurrencyInputFormatter(),
