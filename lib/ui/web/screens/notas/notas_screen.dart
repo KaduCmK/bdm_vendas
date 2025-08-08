@@ -24,11 +24,8 @@ class NotasScreen extends StatelessWidget {
               if (clienteState is ClienteLoaded) {
                 return GridView.builder(
                   padding: const EdgeInsets.all(8),
-                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: 300,
-                    childAspectRatio: 0.7,
-                    crossAxisSpacing: 8,
-                    mainAxisSpacing: 8,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 4,
                   ),
                   itemCount: notaState.notas.length,
                   itemBuilder: (context, index) {

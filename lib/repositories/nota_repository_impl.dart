@@ -7,18 +7,26 @@ class NotaRepositoryImpl extends NotaRepository {
 
   @override
   Future<List<Nota>> getNotas() async {
-    final snapshot = await _firestore
-        .collection('notas')
-        .orderBy('dataCriacao', descending: true)
-        .get();
-        
-    return snapshot.docs
-        .map((doc) => Nota.fromMap(doc.data()))
-        .toList();
+    final snapshot =
+        await _firestore
+            .collection('notas')
+            .orderBy('dataCriacao', descending: true)
+            .get();
+
+    return snapshot.docs.map((doc) => Nota.fromMap(doc)).toList();
   }
 
   @override
   Future<void> addNota(Nota nota) {
     return _firestore.collection('notas').add(nota.toMap());
+  }
+
+  @override
+  Future<void> updateNota(Nota nota) {
+    if (nota.id == null) {
+      throw Exception('Nota não possui um ID válido.');
+    }
+
+    return _firestore.collection('notas').doc(nota.id).update(nota.toMap());
   }
 }

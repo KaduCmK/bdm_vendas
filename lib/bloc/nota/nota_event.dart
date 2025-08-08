@@ -17,3 +17,12 @@ class AddNota extends NotaEvent {
   @override
   List<Object> get props => [nota];
 }
+
+class UpdateNota extends NotaEvent {
+  final Nota nota;
+
+  const UpdateNota(this.nota);
+
+  @override
+  List<Object> get props => [nota];
+}
