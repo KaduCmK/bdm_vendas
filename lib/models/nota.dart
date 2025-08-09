@@ -13,13 +13,13 @@ extension NotaStatusExtension on NotaStatus {
       case NotaStatus.emAberto:
         return 'Em Aberto';
       case NotaStatus.pagoCredito:
-        return 'Pago (Crédito)';
+        return 'Crédito';
       case NotaStatus.pagoDebito:
-        return 'Pago (Débito)';
+        return 'Débito';
       case NotaStatus.pagoPix:
-        return 'Pago (Pix)';
+        return 'Pix';
       case NotaStatus.pagoDinheiro:
-        return 'Pago (Dinheiro)';
+        return 'Dinheiro';
     }
   }
 }
