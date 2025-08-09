@@ -39,10 +39,13 @@ class NotasScreen extends StatelessWidget {
                 }
                 return GridView.builder(
                   padding: const EdgeInsets.all(8),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,
+                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                    maxCrossAxisExtent: 500, // Largura máxima de cada card
+                    childAspectRatio: 0.9, // Proporção do card
+                    crossAxisSpacing: 8,
+                    mainAxisSpacing: 8,
                   ),
-                  itemCount: notasAbertas.length, // Usando a lista filtrada
+                  itemCount: notasAbertas.length,
                   itemBuilder: (context, index) {
                     final nota = notasAbertas[index]; // Usando a lista filtrada
                     final cliente = clienteState.clientes.firstWhereOrNull(
