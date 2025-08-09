@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:bdm_vendas/models/nota.dart';
-import 'package:bdm_vendas/repositories/nota_repository.dart';
+import 'package:bdm_vendas/repositories/nota/nota_repository.dart';
 import 'package:logger/logger.dart';
 
 part 'nota_event.dart';

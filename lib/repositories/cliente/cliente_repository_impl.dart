@@ -1,6 +1,6 @@
-import 'package:bdm_vendas/repositories/cliente_repository.dart';
+import 'package:bdm_vendas/repositories/cliente/cliente_repository.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../models/cliente.dart';
+import '../../models/cliente.dart';
 
 class ClienteRepositoryImpl extends ClienteRepository {
   final _firestore = FirebaseFirestore.instance;

@@ -1,6 +1,6 @@
-import 'package:bdm_vendas/repositories/nota_repository.dart';
+import 'package:bdm_vendas/repositories/nota/nota_repository.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../models/nota.dart';
+import '../../models/nota.dart';
 
 class NotaRepositoryImpl extends NotaRepository {
   final _firestore = FirebaseFirestore.instance;

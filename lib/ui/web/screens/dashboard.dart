@@ -1,3 +1,4 @@
+import 'package:bdm_vendas/ui/web/screens/cardapio/cardapio_management_screen.dart';
 import 'package:bdm_vendas/ui/web/screens/clientes/clientes_screen.dart';
 import 'package:bdm_vendas/ui/web/screens/notas/notas_screen.dart';
 import 'package:bdm_vendas/ui/web/screens/notas_arquivadas_screen.dart';
@@ -18,6 +19,7 @@ class _DashboardState extends State<Dashboard> {
     NotasScreen(),
     NotasArquivadasScreen(),
     ClientesScreen(),
+    CardapioManagementScreen(),
   ];
 
   @override
@@ -61,6 +63,12 @@ class _DashboardState extends State<Dashboard> {
                 icon: Icon(Icons.person_2_outlined),
                 selectedIcon: Icon(Icons.person_2),
                 label: Text("Clientes"),
+                padding: EdgeInsets.symmetric(vertical: 4)
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.menu_book_outlined),
+                selectedIcon: Icon(Icons.menu_book),
+                label: Text("Gerenciar Cardápio"),
                 padding: EdgeInsets.symmetric(vertical: 4)
               ),
             ],

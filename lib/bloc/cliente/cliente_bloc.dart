@@ -1,5 +1,5 @@
 import 'package:bdm_vendas/models/cliente.dart';
-import 'package:bdm_vendas/repositories/cliente_repository.dart';
+import 'package:bdm_vendas/repositories/cliente/cliente_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:logger/logger.dart';
