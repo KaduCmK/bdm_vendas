@@ -28,48 +28,43 @@ class NotaCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.all(8.0),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            _NotaCardHeader(cliente: cliente, nota: nota),
-            const Divider(),
-            _ProductListHeader(),
-            Expanded(child: _ProductList(nota: nota)),
-            const Divider(),
-            _AddProductRow(nota: nota),
-            const Divider(),
-            // <<< NOVO RODAPÉ AQUI >>>
-            Padding(
-              padding: const EdgeInsets.only(top: 12.0, left: 8.0, right: 8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    'Total: ${NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$').format(nota.total)}',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
+      child: Column(
+        children: [
+          _NotaCardHeader(cliente: cliente, nota: nota),
+          const Divider(),
+          _ProductListHeader(),
+          Expanded(child: _ProductList(nota: nota)),
+          const Divider(),
+          _AddProductRow(nota: nota),
+          const Divider(),
+          Padding(
+            padding: const EdgeInsets.only(top: 12.0, left: 8.0, right: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  'Total: ${NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$').format(nota.total)}',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                ElevatedButton.icon(
+                  onPressed: () => _showFecharContaDialog(context),
+                  icon: const Icon(Icons.check_circle),
+                  label: const Text('Fechar a Conta'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  ElevatedButton.icon(
-                    onPressed: () => _showFecharContaDialog(context),
-                    icon: const Icon(Icons.check_circle),
-                    label: const Text('Fechar a Conta'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -101,7 +96,7 @@ class _ProductListHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+      padding: EdgeInsets.symmetric(horizontal: 2.0, vertical: 4.0),
       child: Row(
         children: [
           SizedBox(width: 40),
@@ -166,12 +161,12 @@ class _ProductList extends StatelessWidget {
       itemBuilder: (context, index) {
         final produto = nota.produtos[index];
         return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
+          padding: const EdgeInsets.all(2.0),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(
-                width: 40,
+                width: 32,
                 child: IconButton(
                   icon: const Icon(Icons.delete_outline),
                   color: Colors.red,

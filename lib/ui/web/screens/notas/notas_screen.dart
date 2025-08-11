@@ -6,8 +6,32 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class NotasScreen extends StatelessWidget {
+class NotasScreen extends StatefulWidget {
   const NotasScreen({super.key});
+
+  @override
+  State<NotasScreen> createState() => _NotasScreenState();
+}
+
+class _NotasScreenState extends State<NotasScreen> {
+  final _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(() {
+      setState(() {
+        _searchQuery = _searchController.text;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +44,6 @@ class NotasScreen extends StatelessWidget {
           return Center(child: Text(notaState.message));
         }
         if (notaState is NotaLoaded) {
-          // <<< FILTRO APLICADO AQUI >>>
           final notasAbertas =
               notaState.notas
                   .where((nota) => nota.status == NotaStatus.emAberto)
@@ -29,7 +52,18 @@ class NotasScreen extends StatelessWidget {
           return BlocBuilder<ClienteBloc, ClienteState>(
             builder: (context, clienteState) {
               if (clienteState is ClienteLoaded) {
-                if (notasAbertas.isEmpty) {
+                final filteredNotas =
+                    notasAbertas.where((nota) {
+                      final cliente = clienteState.clientes.firstWhereOrNull(
+                        (c) => c.id == nota.clienteId,
+                      );
+                      if (cliente == null) return false;
+                      return cliente.nome.toLowerCase().contains(
+                        _searchQuery.toLowerCase(),
+                      );
+                    }).toList();
+
+                if (filteredNotas.isEmpty) {
                   return const Center(
                     child: Text(
                       'Nenhuma nota em aberto no momento.',
@@ -37,23 +71,41 @@ class NotasScreen extends StatelessWidget {
                     ),
                   );
                 }
-                return GridView.builder(
-                  padding: const EdgeInsets.all(8),
-                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: 500, // Largura máxima de cada card
-                    childAspectRatio: 0.9, // Proporção do card
-                    crossAxisSpacing: 8,
-                    mainAxisSpacing: 8,
-                  ),
-                  itemCount: notasAbertas.length,
-                  itemBuilder: (context, index) {
-                    final nota = notasAbertas[index]; // Usando a lista filtrada
-                    final cliente = clienteState.clientes.firstWhereOrNull(
-                      (c) => c.id == nota.clienteId,
-                    );
+                return Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextField(
+                        controller: _searchController,
+                        decoration: const InputDecoration(
+                          labelText: 'Buscar por nome do cliente',
+                          prefixIcon: Icon(Icons.search),
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: GridView.builder(
+                        padding: const EdgeInsets.all(4),
+                        gridDelegate:
+                            const SliverGridDelegateWithMaxCrossAxisExtent(
+                              maxCrossAxisExtent: 540,
+                              childAspectRatio: 0.9,
+                              crossAxisSpacing: 4,
+                              mainAxisSpacing: 4,
+                            ),
+                        itemCount: filteredNotas.length,
+                        itemBuilder: (context, index) {
+                          final nota =
+                              filteredNotas[index]; // Usando a lista filtrada
+                          final cliente = clienteState.clientes
+                              .firstWhereOrNull((c) => c.id == nota.clienteId);
 
-                    return NotaCard(nota: nota, cliente: cliente);
-                  },
+                          return NotaCard(nota: nota, cliente: cliente);
+                        },
+                      ),
+                    ),
+                  ],
                 );
               }
               return const Center(child: CircularProgressIndicator());
