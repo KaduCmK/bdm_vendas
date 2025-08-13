@@ -1,5 +1,3 @@
-// lib/models/nota.dart
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:bdm_vendas/models/produto.dart';
@@ -27,6 +25,7 @@ extension NotaStatusExtension on NotaStatus {
 class Nota extends Equatable {
   final String? id;
   final DateTime dataCriacao;
+  final DateTime? dataFechamento;
   final List<Produto> produtos;
   final String clienteId;
   final NotaStatus status;
@@ -34,6 +33,7 @@ class Nota extends Equatable {
   const Nota({
     this.id,
     required this.dataCriacao,
+    this.dataFechamento,
     this.produtos = const [],
     required this.clienteId,
     this.status = NotaStatus.emAberto,
@@ -44,6 +44,7 @@ class Nota extends Equatable {
   Nota copyWith({
     String? id,
     DateTime? dataCriacao,
+    DateTime? dataFechamento,
     List<Produto>? produtos,
     String? clienteId,
     NotaStatus? status,
@@ -51,6 +52,7 @@ class Nota extends Equatable {
     return Nota(
       id: id ?? this.id,
       dataCriacao: dataCriacao ?? this.dataCriacao,
+      dataFechamento: dataFechamento ?? this.dataFechamento,
       produtos: produtos ?? this.produtos,
       clienteId: clienteId ?? this.clienteId,
       status: status ?? this.status,
@@ -61,9 +63,11 @@ class Nota extends Equatable {
   Map<String, dynamic> toMap() {
     return {
       'dataCriacao': Timestamp.fromDate(dataCriacao),
+      'dataFechamento':
+          dataFechamento != null ? Timestamp.fromDate(dataFechamento!) : null,
       'produtos': produtos.map((p) => p.toMap()).toList(),
       'clienteId': clienteId,
-      'status': status.toString(), // <<< A MÁGICA ACONTECE AQUI
+      'status': status.toString(),
     };
   }
 
@@ -73,11 +77,12 @@ class Nota extends Equatable {
     return Nota(
       id: doc.id,
       dataCriacao: (data['dataCriacao'] as Timestamp).toDate(),
-      produtos: (data['produtos'] as List? ?? [])
-          .map((p) => Produto.fromMap(p))
-          .toList(),
+      dataFechamento: (data['dataFechamento'] as Timestamp?)?.toDate(),
+      produtos:
+          (data['produtos'] as List? ?? [])
+              .map((p) => Produto.fromMap(p))
+              .toList(),
       clienteId: data['clienteId'],
-      // <<< E AQUI, NA VOLTA >>>
       status: NotaStatus.values.firstWhere(
         (e) => e.toString() == data['status'],
         orElse: () => NotaStatus.emAberto,
@@ -86,5 +91,12 @@ class Nota extends Equatable {
   }
 
   @override
-  List<Object?> get props => [id, dataCriacao, produtos, clienteId, status];
+  List<Object?> get props => [
+    id,
+    dataCriacao,
+    dataFechamento,
+    produtos,
+    clienteId,
+    status,
+  ];
 }

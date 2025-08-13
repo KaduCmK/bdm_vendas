@@ -37,7 +37,10 @@ class FecharContaDialogState extends State<FecharContaDialog> {
   }
 
   void _confirmarPagamento() {
-    final notaAtualizada = widget.nota.copyWith(status: _selectedStatus);
+    final notaAtualizada = widget.nota.copyWith(
+      status: _selectedStatus,
+      dataFechamento: DateTime.now(),
+    );
     context.read<NotaBloc>().add(UpdateNota(notaAtualizada));
     context.pop();
   }
