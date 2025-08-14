@@ -89,7 +89,7 @@ class ArquivadaNotaCard extends StatelessWidget {
               ),
             ),
             if (nota.dataFechamento != null)
-              Text('Fechada em ${DateFormat('dd/MM/yyyy').format(nota.dataFechamento!)}'),
+              Text('Fechada em ${DateFormat('dd/MM/yyyy HH:mm').format(nota.dataFechamento!)}'),
           ],
         ),
       ),
