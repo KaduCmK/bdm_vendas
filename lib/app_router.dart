@@ -1,5 +1,5 @@
 import 'package:bdm_vendas/auth_date.dart';
-import 'package:flutter/widgets.dart';
+import 'package:bdm_vendas/ui/web/screens/cardapio/cardapio_screen.dart';
 import 'package:go_router/go_router.dart';
 
 final routes = GoRouter(
@@ -7,7 +7,7 @@ final routes = GoRouter(
     GoRoute(path: '/', builder: (context, state) => AuthGate()),
     GoRoute(
       path: '/cardapio',
-      builder: (context, state) => Placeholder(child: Text('Cardapio')),
+      builder: (context, state) => const CardapioScreen(),
     ),
   ],
 );

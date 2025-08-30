@@ -7,9 +7,9 @@ abstract class CardapioEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class LoadCardapioItens extends CardapioEvent {}
+final class LoadCardapioItens extends CardapioEvent {}
 
-class AddCardapioItem extends CardapioEvent {
+final class AddCardapioItem extends CardapioEvent {
   final CardapioItem item;
 
   const AddCardapioItem(this.item);
@@ -18,7 +18,7 @@ class AddCardapioItem extends CardapioEvent {
   List<Object> get props => [item];
 }
 
-class UpdateCardapioItem extends CardapioEvent {
+final class UpdateCardapioItem extends CardapioEvent {
   final CardapioItem item;
 
   const UpdateCardapioItem(this.item);
@@ -27,7 +27,7 @@ class UpdateCardapioItem extends CardapioEvent {
   List<Object> get props => [item];
 }
 
-class DeleteCardapioItem extends CardapioEvent {
+final class DeleteCardapioItem extends CardapioEvent {
   final String id;
 
   const DeleteCardapioItem(this.id);

@@ -5,6 +5,7 @@ import 'package:bdm_vendas/ui/web/screens/cardapio/cardapio_item_dialog.dart';
 import 'package:bdm_vendas/ui/web/screens/cardapio/categoria_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class CardapioManagementScreen extends StatelessWidget {
   const CardapioManagementScreen({super.key});
@@ -26,7 +27,16 @@ class CardapioManagementScreen extends StatelessWidget {
       length: 2, // 2 abas: Comidas e Bebidas
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Gerenciamento do Cardápio'),
+          title: Row(
+            spacing: 8,
+            children: [
+              const Text('Gerenciamento do Cardápio'),
+              OutlinedButton(
+                onPressed: () => context.go('/cardapio'),
+                child: const Text('Ver Cardápio'),
+              ),
+            ],
+          ),
           elevation: 0,
           backgroundColor: Colors.white,
           actions: [
