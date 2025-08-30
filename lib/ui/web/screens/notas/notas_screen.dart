@@ -75,13 +75,24 @@ class _NotasScreenState extends State<NotasScreen> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: TextField(
-                        controller: _searchController,
-                        decoration: const InputDecoration(
-                          labelText: 'Buscar por nome do cliente',
-                          prefixIcon: Icon(Icons.search),
-                          border: OutlineInputBorder(),
-                        ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: _searchController,
+                              decoration: const InputDecoration(
+                                labelText: 'Buscar por nome do cliente',
+                                prefixIcon: Icon(Icons.search),
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            onPressed:
+                                () => context.read<NotaBloc>().add(LoadNotas()),
+                            icon: Icon(Icons.refresh),
+                          ),
+                        ],
                       ),
                     ),
                     Expanded(

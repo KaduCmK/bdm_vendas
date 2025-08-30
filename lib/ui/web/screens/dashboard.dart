@@ -15,12 +15,24 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   int _selectedIndex = 0;
 
-  static const List<Widget> _destinations = <Widget>[
-    ClientesScreen(),
-    NotasScreen(),
-    NotasArquivadasScreen(),
-    CardapioManagementScreen(),
-  ];
+  late final List<Widget> _destinations;
+
+  @override
+  void initState() {
+    super.initState();
+    _destinations = <Widget>[
+      ClientesScreen(onNavigateToNotas: () => _navigateToIndex(1)),
+      NotasScreen(),
+      NotasArquivadasScreen(),
+      CardapioManagementScreen(),
+    ];
+  }
+
+  void _navigateToIndex(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,11 +42,7 @@ class _DashboardState extends State<Dashboard> {
         children: [
           NavigationRail(
             selectedIndex: _selectedIndex,
-            onDestinationSelected: (index) {
-              setState(() {
-                _selectedIndex = index;
-              });
-            },
+            onDestinationSelected: _navigateToIndex,
             labelType: NavigationRailLabelType.all,
             leading: FloatingActionButton.extended(
               onPressed: () {
@@ -51,25 +59,25 @@ class _DashboardState extends State<Dashboard> {
                 icon: Icon(Icons.person_2_outlined),
                 selectedIcon: Icon(Icons.person_2),
                 label: Text("Clientes"),
-                padding: EdgeInsets.symmetric(vertical: 4)
+                padding: EdgeInsets.symmetric(vertical: 4),
               ),
               NavigationRailDestination(
                 icon: Icon(Icons.description_outlined),
                 selectedIcon: Icon(Icons.description),
                 label: Text("Notas"),
-                padding: EdgeInsets.symmetric(vertical: 4)
+                padding: EdgeInsets.symmetric(vertical: 4),
               ),
               NavigationRailDestination(
                 icon: Icon(Icons.archive_outlined),
                 selectedIcon: Icon(Icons.archive),
                 label: Text("Arquivadas"),
-                padding: EdgeInsets.symmetric(vertical: 4)
+                padding: EdgeInsets.symmetric(vertical: 4),
               ),
               NavigationRailDestination(
                 icon: Icon(Icons.menu_book_outlined),
                 selectedIcon: Icon(Icons.menu_book),
                 label: Text("Gerenciar Cardápio"),
-                padding: EdgeInsets.symmetric(vertical: 4)
+                padding: EdgeInsets.symmetric(vertical: 4),
               ),
             ],
           ),

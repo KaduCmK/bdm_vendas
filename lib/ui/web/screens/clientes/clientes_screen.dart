@@ -6,7 +6,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 class ClientesScreen extends StatelessWidget {
-  const ClientesScreen({super.key});
+  final VoidCallback onNavigateToNotas;
+
+  const ClientesScreen({super.key, required this.onNavigateToNotas});
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +81,7 @@ class ClientesScreen extends StatelessWidget {
                         builder: (_) => ConfirmarNotaDialog(cliente: cliente),
                       ).then((value) {
                         if (value ?? false) {
-                          // navegar para Notas
+                          onNavigateToNotas();
                         }
                       });
                     },
