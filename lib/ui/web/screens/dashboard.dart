@@ -16,9 +16,9 @@ class _DashboardState extends State<Dashboard> {
   int _selectedIndex = 0;
 
   static const List<Widget> _destinations = <Widget>[
+    ClientesScreen(),
     NotasScreen(),
     NotasArquivadasScreen(),
-    ClientesScreen(),
     CardapioManagementScreen(),
   ];
 
@@ -48,6 +48,12 @@ class _DashboardState extends State<Dashboard> {
             ),
             destinations: const [
               NavigationRailDestination(
+                icon: Icon(Icons.person_2_outlined),
+                selectedIcon: Icon(Icons.person_2),
+                label: Text("Clientes"),
+                padding: EdgeInsets.symmetric(vertical: 4)
+              ),
+              NavigationRailDestination(
                 icon: Icon(Icons.description_outlined),
                 selectedIcon: Icon(Icons.description),
                 label: Text("Notas"),
@@ -57,12 +63,6 @@ class _DashboardState extends State<Dashboard> {
                 icon: Icon(Icons.archive_outlined),
                 selectedIcon: Icon(Icons.archive),
                 label: Text("Arquivadas"),
-                padding: EdgeInsets.symmetric(vertical: 4)
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.person_2_outlined),
-                selectedIcon: Icon(Icons.person_2),
-                label: Text("Clientes"),
                 padding: EdgeInsets.symmetric(vertical: 4)
               ),
               NavigationRailDestination(

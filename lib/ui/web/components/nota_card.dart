@@ -39,29 +39,32 @@ class NotaCard extends StatelessWidget {
           const Divider(),
           Padding(
             padding: const EdgeInsets.only(top: 12.0, left: 8.0, right: 8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  'Total: ${NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$').format(nota.total)}',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                ),
-                ElevatedButton.icon(
-                  onPressed: () => _showFecharContaDialog(context),
-                  icon: const Icon(Icons.check_circle),
-                  label: const Text('Fechar a Conta'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    'Total: ${NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$').format(nota.total)}',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
-              ],
+                  ElevatedButton.icon(
+                    onPressed: () => _showFecharContaDialog(context),
+                    icon: const Icon(Icons.check_circle),
+                    label: const Text('Fechar a Conta'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -267,17 +270,6 @@ class _AddProductRowState extends State<_AddProductRow> {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Expanded(
-            flex: 5,
-            child: TextFormField(
-              controller: _nomeController,
-              decoration: const InputDecoration(
-                labelText: 'Produto',
-                isDense: true,
-              ),
-            ),
-          ),
-          const SizedBox(width: 8),
-          Expanded(
             flex: 2,
             child: TextFormField(
               controller: _qtdController,
@@ -286,6 +278,17 @@ class _AddProductRowState extends State<_AddProductRow> {
                 isDense: true,
               ),
               keyboardType: TextInputType.number,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            flex: 5,
+            child: TextFormField(
+              controller: _nomeController,
+              decoration: const InputDecoration(
+                labelText: 'Produto',
+                isDense: true,
+              ),
             ),
           ),
           const SizedBox(width: 8),

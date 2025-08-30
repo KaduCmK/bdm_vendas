@@ -1,4 +1,5 @@
 import 'package:bdm_vendas/bloc/cliente/cliente_bloc.dart';
+import 'package:bdm_vendas/ui/web/screens/clientes/confirmar_nota_dialog.dart';
 import 'package:bdm_vendas/ui/web/screens/clientes/novo_cliente_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,11 +18,11 @@ class ClientesScreen extends StatelessWidget {
         if (state is ClienteError) {
           return Center(child: Text(state.message));
         }
-    
+
         if (state is ClienteLoaded) {
           return _buildContent(context, state);
         }
-    
+
         return const Center(child: Text("Inicializando"));
       },
     );
@@ -45,15 +46,43 @@ class ClientesScreen extends StatelessWidget {
             ),
           ),
           Divider(),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children:
-                state.clientes.map((cliente) {
-                  final data = DateFormat(
-                    'dd/MM/yyyy',
-                  ).format(cliente.dataCriacao);
-                  return Card(
+          Chip(
+            avatar: Icon(
+              Icons.info,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            label: Text(
+              "Toque em um cliente para criar uma nova nota pra ele",
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Expanded(
+            child: GridView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: 230,
+                childAspectRatio: 3 / 2,
+              ),
+              itemCount: state.clientes.length,
+              itemBuilder: (context, index) {
+                final cliente = state.clientes[index];
+                final data = DateFormat(
+                  'dd/MM/yyyy',
+                ).format(cliente.dataCriacao);
+
+                return Card(
+                  child: InkWell(
+                    onTap: () {
+                      showAdaptiveDialog(
+                        context: context,
+                        builder: (_) => ConfirmarNotaDialog(cliente: cliente),
+                      ).then((value) {
+                        if (value ?? false) {
+                          // navegar para Notas
+                        }
+                      });
+                    },
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: Column(
@@ -71,8 +100,10 @@ class ClientesScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                  );
-                }).toList(),
+                  ),
+                );
+              },
+            ),
           ),
         ],
       ),
