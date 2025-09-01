@@ -10,6 +10,7 @@ class ShareNotaDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double qrCodeSize = 350;
+    debugPrint(notaUrl);
 
     return AlertDialog(
       title: const Text("Compartilhar nota com cliente"),

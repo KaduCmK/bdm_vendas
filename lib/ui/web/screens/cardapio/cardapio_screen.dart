@@ -50,7 +50,7 @@ class _CardapioScreenState extends State<CardapioScreen> {
               background: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Image.asset('images/header.jpg', fit: BoxFit.fitHeight),
+                  Image.asset('assets/images/header.jpg', fit: BoxFit.fitHeight),
                   Container(
                     decoration: const BoxDecoration(
                       gradient: LinearGradient(
@@ -81,7 +81,7 @@ class _CardapioScreenState extends State<CardapioScreen> {
                 ],
               ),
               title: Image.asset(
-                'images/logo.png',
+                'assets/images/logo.png',
                 height: screenHeight * 0.15,
                 isAntiAlias: true,
                 fit: BoxFit.contain,

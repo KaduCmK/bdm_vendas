@@ -73,7 +73,7 @@ class _CardapioCategoriaCardState extends State<CardapioCategoriaCard> {
                 Transform.translate(
                   offset: _imageOffset,
                   child: Image.asset(
-                    removeDiacritics(widget.imagePath ?? 'images/${widget.title}.jpg',),
+                    removeDiacritics(widget.imagePath ?? 'assets/images/${widget.title}.jpg',),
                     fit: BoxFit.cover,
                     errorBuilder:
                         (context, error, stackTrace) =>

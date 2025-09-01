@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:bdm_vendas/models/nota.dart';
@@ -10,12 +12,15 @@ part 'nota_state.dart';
 class NotaBloc extends Bloc<NotaEvent, NotaState> {
   final Logger _logger = Logger();
   final NotaRepository _repository;
+  StreamSubscription? _notaSubscription;
 
   NotaBloc({required NotaRepository repository})
     : _repository = repository,
       super(NotaInitial()) {
     on<LoadNotas>(_onLoadNotas);
     on<LoadNota>(_onLoadNota);
+    on<WatchNota>(_onWatchNota);
+    on<_NotaUpdated>(_onNotaUpdated);
     on<AddNota>(_onAddNota);
     on<UpdateNota>(_onUpdateNota);
   }
@@ -38,6 +43,26 @@ class NotaBloc extends Bloc<NotaEvent, NotaState> {
     } catch (e) {
       emit(NotaError("Falha ao carregar notas: ${e.toString()}"));
     }
+  }
+
+  void _onWatchNota(WatchNota event, Emitter<NotaState> emit) async {
+    emit(NotaLoading());
+    _notaSubscription?.cancel();
+    _notaSubscription = _repository
+        .watchNota(event.notaId)
+        .listen(
+          (nota) {
+            add(_NotaUpdated(nota));
+          },
+          onError: (e) {
+            _logger.e(e);
+            emit(NotaError("Falha ao carregar notas: ${e.toString()}"));
+          },
+        );
+  }
+
+  void _onNotaUpdated(_NotaUpdated event, Emitter<NotaState> emit) {
+    emit(SingleNotaLoaded(event.nota));
   }
 
   void _onAddNota(AddNota event, Emitter<NotaState> emit) async {

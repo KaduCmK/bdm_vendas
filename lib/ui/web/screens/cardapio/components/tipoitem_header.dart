@@ -26,7 +26,7 @@ class TipoitemHeader extends StatelessWidget {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    Image.asset('images/$tipoItemTitulo.jpg', fit: BoxFit.cover),
+                    Image.asset('assets/images/$tipoItemTitulo.jpg', fit: BoxFit.cover),
                     Container(
                       decoration: const BoxDecoration(
                         gradient: LinearGradient(

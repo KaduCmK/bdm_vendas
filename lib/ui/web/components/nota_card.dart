@@ -3,8 +3,9 @@ import 'package:bdm_vendas/models/cliente.dart';
 import 'package:bdm_vendas/models/nota.dart';
 import 'package:bdm_vendas/models/produto.dart';
 import 'package:bdm_vendas/ui/shared/currency_input_formatter.dart';
+import 'package:bdm_vendas/ui/web/components/nota_card_header.dart';
+import 'package:bdm_vendas/ui/web/components/nota_card_product_list.dart';
 import 'package:bdm_vendas/ui/web/dialogs/fechar_conta_dialog.dart';
-import 'package:bdm_vendas/ui/web/screens/notas/components/share_nota_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -31,10 +32,10 @@ class NotaCard extends StatelessWidget {
     return Card(
       child: Column(
         children: [
-          _NotaCardHeader(cliente: cliente, nota: nota),
+          NotaCardHeader(cliente: cliente, nota: nota),
           const Divider(),
           _ProductListHeader(),
-          Expanded(child: _ProductList(nota: nota)),
+          Expanded(child: ProductList(nota: nota)),
           const Divider(),
           _AddProductRow(nota: nota),
           const Divider(),
@@ -69,39 +70,6 @@ class NotaCard extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-// Widgets internos refatorados para melhor organização
-class _NotaCardHeader extends StatelessWidget {
-  final Cliente? cliente;
-  final Nota nota;
-  const _NotaCardHeader({this.cliente, required this.nota});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: const CircleAvatar(child: Icon(Icons.person)),
-      title: Text(cliente?.nome ?? 'Cliente não encontrado'),
-      subtitle: Row(
-        children: [
-          const Icon(Icons.calendar_month, size: 16),
-          const SizedBox(width: 4),
-          Text(DateFormat('dd/MM/yyyy').format(nota.dataCriacao)),
-        ],
-      ),
-      trailing: IconButton(
-        onPressed:
-            () => showDialog(
-              context: context,
-              builder:
-                  (context) => ShareNotaDialog(
-                    notaUrl: '${Uri.base.origin}/#/view-nota/${nota.id}',
-                  ),
-            ),
-        icon: Icon(Icons.qr_code),
       ),
     );
   }
@@ -147,76 +115,7 @@ class _ProductListHeader extends StatelessWidget {
   }
 }
 
-class _ProductList extends StatelessWidget {
-  final Nota nota;
-  const _ProductList({required this.nota});
 
-  void _removerProduto(BuildContext context, int index) {
-    final produtos = List<Produto>.from(nota.produtos)..removeAt(index);
-    final notaAtualizada = nota.copyWith(produtos: produtos);
-    context.read<NotaBloc>().add(UpdateNota(notaAtualizada));
-  }
-
-  void _incrementarQuantidade(BuildContext context, int index) {
-    final produtos = List<Produto>.from(nota.produtos);
-    final produto = produtos[index];
-    produtos[index] = produto.copyWith(quantidade: produto.quantidade + 1);
-    final notaAtualizada = nota.copyWith(produtos: produtos);
-    context.read<NotaBloc>().add(UpdateNota(notaAtualizada));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final formatadorReais = NumberFormat.currency(
-      locale: 'pt_BR',
-      symbol: 'R\$',
-    );
-    return ListView.builder(
-      itemCount: nota.produtos.length,
-      itemBuilder: (context, index) {
-        final produto = nota.produtos[index];
-        return Padding(
-          padding: const EdgeInsets.all(2.0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(
-                width: 32,
-                child: IconButton(
-                  icon: const Icon(Icons.delete_outline),
-                  color: Colors.red,
-                  tooltip: 'Remover produto',
-                  onPressed: () => _removerProduto(context, index),
-                ),
-              ),
-              Expanded(flex: 6, child: Text(produto.nome)),
-              Expanded(flex: 2, child: Text('${produto.quantidade}')),
-              Expanded(
-                flex: 3,
-                child: Text(formatadorReais.format(produto.valorUnitario)),
-              ),
-              Expanded(
-                flex: 3,
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(formatadorReais.format(produto.subtotal)),
-                ),
-              ),
-              SizedBox(
-                width: 40,
-                child: IconButton(
-                  icon: const Icon(Icons.add_circle_outline),
-                  onPressed: () => _incrementarQuantidade(context, index),
-                  tooltip: 'Adicionar um',
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-}
 
 class _AddProductRow extends StatefulWidget {
   final Nota nota;

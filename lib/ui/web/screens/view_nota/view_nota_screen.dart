@@ -1,4 +1,5 @@
 import 'package:bdm_vendas/bloc/nota/nota_bloc.dart';
+import 'package:bdm_vendas/ui/shared/components/live_circle.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,7 +26,7 @@ class _ViewNotaScreenState extends State<ViewNotaScreen> {
     }
     if (!mounted) return;
 
-    context.read<NotaBloc>().add(LoadNota(widget.notaId));
+    context.read<NotaBloc>().add(WatchNota(widget.notaId));
   }
 
   @override
@@ -67,13 +68,26 @@ class _ViewNotaScreenState extends State<ViewNotaScreen> {
                         style: Theme.of(context).textTheme.headlineSmall,
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 2),
                       Text(
                         'Aberta em: ${DateFormat('dd/MM/yyyy HH:mm').format(nota.dataCriacao)}',
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
-                      const Divider(height: 32),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          LiveCircle(),
+                          Text(
+                            'Em tempo real',
+                            style: textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const Divider(height: 28),
                       Expanded(
                         child: ListView.builder(
                           itemCount: nota.produtos.length,

@@ -22,8 +22,17 @@ class NotaRepositoryImpl extends NotaRepository {
     if (!doc.exists) {
       throw Exception('Nota não encontrada.');
     }
-    
+
     return Nota.fromMap(doc);
+  }
+
+  @override
+  Stream<Nota> watchNota(String id) {
+    return _firestore
+        .collection('notas')
+        .doc(id)
+        .snapshots()
+        .map((doc) => Nota.fromMap(doc));
   }
 
   @override
