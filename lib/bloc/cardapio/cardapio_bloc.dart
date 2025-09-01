@@ -2,11 +2,13 @@ import 'package:bdm_vendas/models/cardapio/cardapio_item.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:bdm_vendas/repositories/cardapio/cardapio_repository.dart';
+import 'package:logger/logger.dart';
 
 part 'cardapio_event.dart';
 part 'cardapio_state.dart';
 
 class CardapioBloc extends Bloc<CardapioEvent, CardapioState> {
+  final _logger = Logger();
   final CardapioRepository _repository;
 
   CardapioBloc({required CardapioRepository repository})
@@ -27,6 +29,7 @@ class CardapioBloc extends Bloc<CardapioEvent, CardapioState> {
       final itens = await _repository.getCardapioItens();
       emit(CardapioLoaded(itens));
     } catch (e) {
+      _logger.e(e);
       emit(CardapioError("Falha ao carregar o cardápio: ${e.toString()}"));
     }
   }

@@ -1,15 +1,20 @@
+import 'package:diacritic/diacritic.dart';
 import 'package:flutter/material.dart';
 
 class CardapioCategoriaCard extends StatefulWidget {
   final String title;
   final ScrollController scrollController;
   final VoidCallback? onTap;
+  final double height;
+  final String? imagePath;
 
   const CardapioCategoriaCard({
     super.key,
     required this.title,
     required this.scrollController,
     this.onTap,
+    this.height = 300,
+    this.imagePath,
   });
 
   @override
@@ -53,9 +58,7 @@ class _CardapioCategoriaCardState extends State<CardapioCategoriaCard> {
 
     return Card(
       clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 8,
       child: InkWell(
         onTap: widget.onTap,
@@ -63,15 +66,18 @@ class _CardapioCategoriaCardState extends State<CardapioCategoriaCard> {
           tag: widget.title,
           child: SizedBox(
             key: _imageKey,
-            height: 300,
+            height: widget.height,
             child: Stack(
               fit: StackFit.expand,
               children: [
                 Transform.translate(
                   offset: _imageOffset,
                   child: Image.asset(
-                    'images/${widget.title}.jpg',
-                    fit: BoxFit.cover, 
+                    removeDiacritics(widget.imagePath ?? 'images/${widget.title}.jpg',),
+                    fit: BoxFit.cover,
+                    errorBuilder:
+                        (context, error, stackTrace) =>
+                            const Icon(Icons.image_not_supported),
                   ),
                 ),
                 Container(

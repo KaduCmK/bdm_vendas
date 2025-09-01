@@ -1,8 +1,9 @@
 import 'package:bdm_vendas/bloc/cardapio/cardapio_bloc.dart';
 import 'package:bdm_vendas/bloc/categoria/categoria_bloc.dart';
 import 'package:bdm_vendas/models/cardapio/cardapio_item.dart';
-import 'package:bdm_vendas/ui/web/screens/cardapio/cardapio_item_dialog.dart';
-import 'package:bdm_vendas/ui/web/screens/cardapio/categoria_dialog.dart';
+import 'package:bdm_vendas/ui/web/screens/cardapio/components/cardapio_item_dialog.dart';
+import 'package:bdm_vendas/ui/web/screens/cardapio/components/cardapio_management_item.dart';
+import 'package:bdm_vendas/ui/web/screens/cardapio/components/categoria_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -14,8 +15,13 @@ class CardapioManagementScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder:
-          (_) => BlocProvider.value(
-            value: BlocProvider.of<CardapioBloc>(context),
+          (_) => MultiBlocProvider(
+            providers: [
+              BlocProvider.value(value: BlocProvider.of<CardapioBloc>(context)),
+              BlocProvider.value(
+                value: BlocProvider.of<CategoriaBloc>(context),
+              ),
+            ],
             child: CardapioItemDialog(item: item),
           ),
     );
@@ -28,9 +34,9 @@ class CardapioManagementScreen extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: Row(
-            spacing: 8,
             children: [
               const Text('Gerenciamento do Cardápio'),
+              SizedBox(width: 8),
               OutlinedButton(
                 onPressed: () => context.go('/cardapio'),
                 child: const Text('Ver Cardápio'),
@@ -88,16 +94,8 @@ class CardapioManagementScreen extends StatelessWidget {
 
               return TabBarView(
                 children: [
-                  _ItemList(
-                    itens: comidas,
-                    onEdit: _showItemDialog,
-                    context: context,
-                  ),
-                  _ItemList(
-                    itens: bebidas,
-                    onEdit: _showItemDialog,
-                    context: context,
-                  ),
+                  _ItemList(itens: comidas, onEdit: _showItemDialog),
+                  _ItemList(itens: bebidas, onEdit: _showItemDialog),
                 ],
               );
             }
@@ -115,67 +113,34 @@ class CardapioManagementScreen extends StatelessWidget {
 class _ItemList extends StatelessWidget {
   final List<CardapioItem> itens;
   final Function(BuildContext, {CardapioItem? item}) onEdit;
-  final BuildContext context;
 
-  const _ItemList({
-    required this.itens,
-    required this.onEdit,
-    required this.context,
-  });
+  const _ItemList({required this.itens, required this.onEdit});
 
   @override
   Widget build(BuildContext buildContext) {
-    // Renomeado para evitar conflito
     if (itens.isEmpty) {
       return Center(child: Text('Nenhum item desta categoria cadastrado.'));
     }
 
-    return ListView.separated(
-      itemCount: itens.length,
-      separatorBuilder: (context, index) => const Divider(height: 1),
-      itemBuilder: (context, index) {
-        final item = itens[index];
-        return ListTile(
-          title: Text(
-            item.nome,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          subtitle: item.descricao != null ? Text(item.descricao!) : null,
-          leading: CircleAvatar(
-            child: Icon(
-              item.tipo == TipoItem.comida
-                  ? Icons.fastfood_outlined
-                  : Icons.local_bar_outlined,
-            ),
-          ),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Chip(label: Text(item.categoria)),
-              const SizedBox(width: 16),
-              Text(
-                "R\$ ${item.preco.toStringAsFixed(2)}",
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(width: 16),
-              IconButton(
-                icon: const Icon(Icons.edit_outlined),
-                color: Colors.blue.shade700,
-                tooltip: 'Editar',
-                onPressed: () => onEdit(this.context, item: item),
-              ),
-              IconButton(
-                icon: const Icon(Icons.delete_outline),
-                color: Colors.red.shade700,
-                tooltip: 'Excluir',
-                onPressed: () {
-                  this.context.read<CardapioBloc>().add(
-                    DeleteCardapioItem(item.id!),
-                  );
-                },
-              ),
-            ],
-          ),
+    return BlocBuilder<CategoriaBloc, CategoriaState>(
+      builder: (context, state) {
+        if (state is! CategoriaLoaded) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        return ListView.separated(
+          itemCount: itens.length,
+          separatorBuilder: (context, index) => const Divider(height: 1),
+          itemBuilder: (context, index) {
+            final item = itens[index];
+            // compara os IDs
+
+            return CardapioManagementItem(
+              item: item,
+              categorias: state.categorias,
+              onEdit: onEdit,
+            );
+          },
         );
       },
     );
