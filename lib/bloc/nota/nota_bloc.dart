@@ -15,8 +15,9 @@ class NotaBloc extends Bloc<NotaEvent, NotaState> {
     : _repository = repository,
       super(NotaInitial()) {
     on<LoadNotas>(_onLoadNotas);
+    on<LoadNota>(_onLoadNota);
     on<AddNota>(_onAddNota);
-    on<UpdateNota>(_onUpdateNota); // Adicione esta linha
+    on<UpdateNota>(_onUpdateNota);
   }
 
   void _onLoadNotas(LoadNotas event, Emitter<NotaState> emit) async {
@@ -24,6 +25,16 @@ class NotaBloc extends Bloc<NotaEvent, NotaState> {
     try {
       final notas = await _repository.getNotas();
       emit(NotaLoaded(notas));
+    } catch (e) {
+      emit(NotaError("Falha ao carregar notas: ${e.toString()}"));
+    }
+  }
+
+  void _onLoadNota(LoadNota event, Emitter<NotaState> emit) async {
+    emit(NotaLoading());
+    try {
+      final notas = await _repository.getNota(event.notaId);
+      emit(SingleNotaLoaded(notas));
     } catch (e) {
       emit(NotaError("Falha ao carregar notas: ${e.toString()}"));
     }

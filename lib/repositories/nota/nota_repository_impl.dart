@@ -17,6 +17,16 @@ class NotaRepositoryImpl extends NotaRepository {
   }
 
   @override
+  Future<Nota> getNota(String id) async {
+    final doc = await _firestore.collection('notas').doc(id).get();
+    if (!doc.exists) {
+      throw Exception('Nota não encontrada.');
+    }
+    
+    return Nota.fromMap(doc);
+  }
+
+  @override
   Future<void> addNota(Nota nota) {
     return _firestore.collection('notas').add(nota.toMap());
   }

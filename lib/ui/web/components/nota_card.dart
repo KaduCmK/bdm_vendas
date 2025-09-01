@@ -4,6 +4,7 @@ import 'package:bdm_vendas/models/nota.dart';
 import 'package:bdm_vendas/models/produto.dart';
 import 'package:bdm_vendas/ui/shared/currency_input_formatter.dart';
 import 'package:bdm_vendas/ui/web/dialogs/fechar_conta_dialog.dart';
+import 'package:bdm_vendas/ui/web/screens/notas/components/share_nota_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -90,6 +91,17 @@ class _NotaCardHeader extends StatelessWidget {
           const SizedBox(width: 4),
           Text(DateFormat('dd/MM/yyyy').format(nota.dataCriacao)),
         ],
+      ),
+      trailing: IconButton(
+        onPressed:
+            () => showDialog(
+              context: context,
+              builder:
+                  (context) => ShareNotaDialog(
+                    notaUrl: '${Uri.base.origin}/#/view-nota/${nota.id}',
+                  ),
+            ),
+        icon: Icon(Icons.qr_code),
       ),
     );
   }

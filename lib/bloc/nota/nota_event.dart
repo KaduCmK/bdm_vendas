@@ -9,6 +9,15 @@ abstract class NotaEvent extends Equatable {
 
 class LoadNotas extends NotaEvent {}
 
+class LoadNota extends NotaEvent {
+  final String notaId;
+
+  const LoadNota(this.notaId);
+
+  @override
+  List<Object> get props => [notaId];
+}
+
 class AddNota extends NotaEvent {
   final Nota nota;
 

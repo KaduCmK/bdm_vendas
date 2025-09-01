@@ -2,7 +2,7 @@ import 'package:bdm_vendas/ui/web/screens/cardapio/cardapio_management_screen.da
 import 'package:bdm_vendas/ui/web/screens/clientes/clientes_screen.dart';
 import 'package:bdm_vendas/ui/web/screens/notas/notas_screen.dart';
 import 'package:bdm_vendas/ui/web/screens/notas_arquivadas_screen.dart';
-import 'package:bdm_vendas/ui/web/screens/notas/nova_nota_dialog.dart';
+import 'package:bdm_vendas/ui/web/screens/notas/components/nova_nota_dialog.dart';
 import 'package:flutter/material.dart';
 
 class Dashboard extends StatefulWidget {

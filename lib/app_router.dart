@@ -4,6 +4,7 @@ import 'package:bdm_vendas/ui/web/screens/auth/signin_screen.dart';
 import 'package:bdm_vendas/ui/web/screens/cardapio/cardapio_screen.dart';
 import 'package:bdm_vendas/ui/web/screens/cardapio/cardapio_tipoitem_screen.dart';
 import 'package:bdm_vendas/ui/web/screens/dashboard.dart';
+import 'package:bdm_vendas/ui/web/screens/view_nota/view_nota_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -32,7 +33,7 @@ final routes = GoRouter(
     final String location = state.uri.toString();
 
     final isLoggingIn = location == '/login';
-    final isPublicPage = location.startsWith('/cardapio');
+    final isPublicPage = location.startsWith('/cardapio') || location.startsWith('/view-nota');
 
     // Se o usuário não estiver logado e não estiver indo para uma página pública, redireciona pro login
     if (!loggedIn && !isLoggingIn && !isPublicPage) {
@@ -77,6 +78,10 @@ final routes = GoRouter(
         ),
       ],
     ),
+    GoRoute(path: '/view-nota/:notaId', builder: (context, state) {
+      final notaId = state.pathParameters['notaId']!;
+      return ViewNotaScreen(notaId: notaId);
+    }),
     GoRoute(path: '/', builder: (context, state) => Dashboard()),
   ],
 );
