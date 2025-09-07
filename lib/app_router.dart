@@ -1,6 +1,5 @@
-import 'dart:async';
-
-import 'package:bdm_vendas/ui/web/screens/auth/signin_screen.dart';
+import 'package:bdm_vendas/ui/shared/go_router_refresh_stream.dart';
+import 'package:bdm_vendas/ui/shared/screens/signin_screen.dart';
 import 'package:bdm_vendas/ui/web/screens/cardapio/cardapio_screen.dart';
 import 'package:bdm_vendas/ui/web/screens/cardapio/cardapio_tipoitem_screen.dart';
 import 'package:bdm_vendas/ui/web/screens/dashboard.dart';
@@ -8,21 +7,6 @@ import 'package:bdm_vendas/ui/web/screens/view_nota/view_nota_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
-class GoRouterRefreshStream extends ChangeNotifier {
-  GoRouterRefreshStream(Stream<dynamic> stream) {
-    notifyListeners();
-    _subscription = stream.asBroadcastStream().listen((_) => notifyListeners());
-  }
-
-  late final StreamSubscription<dynamic> _subscription;
-
-  @override
-  void dispose() {
-    _subscription.cancel();
-    super.dispose();
-  }
-}
 
 final routes = GoRouter(
   refreshListenable: GoRouterRefreshStream(
