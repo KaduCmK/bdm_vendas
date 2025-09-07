@@ -20,6 +20,15 @@ class NotaLoaded extends NotaState {
   List<Object> get props => [notas];
 }
 
+class SingleNotaLoaded extends NotaState {
+  final Nota nota;
+
+  const SingleNotaLoaded(this.nota);
+
+  @override
+  List<Object> get props => [nota];
+}
+
 class NotaError extends NotaState {
   final String message;
 

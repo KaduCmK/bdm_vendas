@@ -2,18 +2,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 
 // Enum para o tipo do item, garantindo que só pode ser Comida ou Bebida
-enum TipoItem {
-  comida,
-  bebida,
-}
+enum TipoItem { comida, bebida }
 
 extension TipoItemExtension on TipoItem {
   String get displayName {
     switch (this) {
       case TipoItem.comida:
-        return 'Comida';
+        return 'Comidas';
       case TipoItem.bebida:
-        return 'Bebida';
+        return 'Bebidas';
     }
   }
 }
@@ -23,8 +20,8 @@ class CardapioItem extends Equatable {
   final String nome;
   final String? descricao;
   final double preco;
-  final TipoItem tipo; 
-  final String categoria;
+  final TipoItem tipo;
+  final DocumentReference categoriaId;
 
   const CardapioItem({
     this.id,
@@ -32,11 +29,11 @@ class CardapioItem extends Equatable {
     this.descricao,
     required this.preco,
     required this.tipo,
-    required this.categoria,
+    required this.categoriaId,
   });
 
   @override
-  List<Object?> get props => [id, nome, descricao, preco, tipo, categoria];
+  List<Object?> get props => [id, nome, descricao, preco, tipo, categoriaId];
 
   CardapioItem copyWith({
     String? id,
@@ -44,7 +41,7 @@ class CardapioItem extends Equatable {
     String? descricao,
     double? preco,
     TipoItem? tipo,
-    String? categoria,
+    DocumentReference? categoriaId,
   }) {
     return CardapioItem(
       id: id ?? this.id,
@@ -52,7 +49,7 @@ class CardapioItem extends Equatable {
       descricao: descricao ?? this.descricao,
       preco: preco ?? this.preco,
       tipo: tipo ?? this.tipo,
-      categoria: categoria ?? this.categoria,
+      categoriaId: categoriaId ?? this.categoriaId,
     );
   }
 
@@ -62,7 +59,7 @@ class CardapioItem extends Equatable {
       'descricao': descricao,
       'preco': preco,
       'tipo': tipo.name,
-      'categoria': categoria,
+      'categoriaId': categoriaId,
     };
   }
 
@@ -74,8 +71,8 @@ class CardapioItem extends Equatable {
       descricao: data['descricao'] ?? '',
       preco: (data['preco'] ?? 0.0).toDouble(),
       // Converte a string de volta para o enum
-      tipo: TipoItem.values.byName(data['tipo'] ?? 'comida'),
-      categoria: data['categoria'] ?? '',
+      tipo: TipoItem.values.byName(data['tipo'] ?? 'comidas'),
+      categoriaId: data['categoriaId'] ?? '',
     );
   }
 }

@@ -47,7 +47,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp.router(
         title: 'BDM-Vendas ',
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightGreen),
         ),
         routerConfig: routes,
       ),

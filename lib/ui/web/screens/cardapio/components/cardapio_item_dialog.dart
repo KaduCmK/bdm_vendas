@@ -3,6 +3,7 @@ import 'package:bdm_vendas/bloc/categoria/categoria_bloc.dart';
 import 'package:bdm_vendas/models/cardapio/cardapio_item.dart';
 import 'package:bdm_vendas/models/cardapio/categoria.dart';
 import 'package:bdm_vendas/ui/shared/currency_input_formatter.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // import firestore
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,7 +21,7 @@ class _CardapioItemDialogState extends State<CardapioItemDialog> {
   late final TextEditingController _nomeController;
   late final TextEditingController _descricaoController;
   late final TextEditingController _precoController;
-  late final TextEditingController _categoriaController;
+  String? _selectedCategoriaId;
 
   TipoItem? _selectedTipo;
 
@@ -32,7 +33,7 @@ class _CardapioItemDialogState extends State<CardapioItemDialog> {
     _precoController = TextEditingController(
       text: widget.item?.preco.toStringAsFixed(2).replaceAll('.', ','),
     );
-    _categoriaController = TextEditingController(text: widget.item?.categoria);
+    _selectedCategoriaId = widget.item?.categoriaId.id;
     _selectedTipo = widget.item?.tipo ?? TipoItem.comida;
   }
 
@@ -41,7 +42,6 @@ class _CardapioItemDialogState extends State<CardapioItemDialog> {
     _nomeController.dispose();
     _descricaoController.dispose();
     _precoController.dispose();
-    _categoriaController.dispose();
     super.dispose();
   }
 
@@ -52,13 +52,17 @@ class _CardapioItemDialogState extends State<CardapioItemDialog> {
         .replaceAll('.', '')
         .replaceAll(',', '.');
 
+    final categoriaRef = FirebaseFirestore.instance
+        .collection('categorias')
+        .doc(_selectedCategoriaId); // cria a referencia
+
     final item = CardapioItem(
       id: widget.item?.id,
       nome: _nomeController.text,
       descricao: _descricaoController.text,
       preco: double.tryParse(precoString) ?? 0.0,
       tipo: _selectedTipo!,
-      categoria: _categoriaController.text,
+      categoriaId: categoriaRef, // salva a referencia
     );
 
     if (widget.item == null) {
@@ -124,7 +128,10 @@ class _CardapioItemDialogState extends State<CardapioItemDialog> {
                       child: DropdownButtonFormField<TipoItem>(
                         value: _selectedTipo,
                         onChanged:
-                            (value) => setState(() => _selectedTipo = value),
+                            (value) => setState(() {
+                              _selectedTipo = value;
+                              _selectedCategoriaId = null;
+                            }),
                         items:
                             TipoItem.values
                                 .map(
@@ -164,22 +171,21 @@ class _CardapioItemDialogState extends State<CardapioItemDialog> {
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
-                  value:
-                      _categoriaController.text.isNotEmpty
-                          ? _categoriaController.text
-                          : null,
+                  value: _selectedCategoriaId,
                   hint: const Text('Selecione'),
                   // Usa a lista filtrada para as opções
                   items:
                       categoriasDoTipo.map((categoria) {
                         return DropdownMenuItem(
-                          value: categoria.nome,
+                          value: categoria.id,
                           child: Text(categoria.nome),
                         );
                       }).toList(),
                   onChanged: (value) {
                     if (value != null) {
-                      _categoriaController.text = value;
+                      setState(() {
+                        _selectedCategoriaId = value;
+                      });
                     }
                   },
                   decoration: const InputDecoration(

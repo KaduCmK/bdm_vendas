@@ -1,67 +1,119 @@
+import 'package:bdm_vendas/ui/web/screens/cardapio/components/cardapio_categoria_card.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
-class CardapioScreen extends StatelessWidget {
+class CardapioScreen extends StatefulWidget {
   const CardapioScreen({super.key});
+
+  @override
+  State<CardapioScreen> createState() => _CardapioScreenState();
+}
+
+class _CardapioScreenState extends State<CardapioScreen> {
+  late final ScrollController _scrollController;
+
+  bool _textVisible = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController =
+        ScrollController()..addListener(() {
+          setState(() {
+            _textVisible = _scrollController.offset <= 32;
+          });
+        });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4),
-        child: Center(
-          child: Column(
-            spacing: 8,
-            children: [
-              const SizedBox(height: 64, width: 64, child: Placeholder()),
-              Text("CARDÁPIO DIGITAL", style: textTheme.displaySmall),
-              const Divider(height: 32),
-              Card(
-                clipBehavior: Clip.antiAlias,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadiusGeometry.circular(12),
-                ),
-                elevation: 8,
-                child: SizedBox(
-                  height: 200,
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      Image.network(
-                        'https://images.unsplash.com/photo-1599409831034-858f59a16a49?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1771&q=80',
-                        fit: BoxFit.cover,
+      backgroundColor: Colors.black,
+      body: CustomScrollView(
+        controller: _scrollController,
+        slivers: [
+          SliverAppBar(
+            backgroundColor: Colors.black,
+            expandedHeight: screenHeight,
+            collapsedHeight: screenHeight * 0.1,
+            pinned: true,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Image.asset('assets/images/header.jpg', fit: BoxFit.fitHeight),
+                  Container(
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Colors.transparent, Colors.black],
+                        stops: [0.0, 0.8],
                       ),
-
-                      Container(
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [Colors.black, Colors.transparent],
-                            begin: Alignment.bottomLeft,
-                            end: Alignment(0, -6),
-                            stops: [0, 0.6],
-                          ),
-                        ),
-                      ),
-
-                      Positioned(
-                        left: 8,
-                        bottom: 8,
-                        child: Text(
-                          "COMIDAS",
-                          style: textTheme.titleLarge?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
+                  Positioned(
+                    bottom: screenHeight * 0.25,
+                    left: 0,
+                    right: 0,
+                    child: AnimatedOpacity(
+                      opacity: _textVisible ? 1.0 : 0.0,
+                      duration: const Duration(milliseconds: 225),
+                      child: Text(
+                        'CARDÁPIO',
+                        style: textTheme.displayMedium?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w900,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
+              title: Image.asset(
+                'assets/images/logo.png',
+                height: screenHeight * 0.15,
+                isAntiAlias: true,
+                fit: BoxFit.contain,
+              ),
+            ),
           ),
-        ),
+
+          SliverToBoxAdapter(
+            child: SizedBox(height: screenHeight * 0.1),
+          ),
+
+          SliverToBoxAdapter(
+            child: SizedBox(
+              height: screenHeight,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  CardapioCategoriaCard(
+                    title: "COMIDAS",
+                    scrollController: _scrollController,
+                    onTap: () => context.push('/cardapio/COMIDAS'),
+                  ),
+                  CardapioCategoriaCard(
+                    title: "BEBIDAS",
+                    scrollController: _scrollController,
+                    onTap: () => context.push('/cardapio/BEBIDAS'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
