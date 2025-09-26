@@ -21,7 +21,7 @@ class ConfirmarNotaDialog extends StatelessWidget {
             Navigator.of(context).pop(false);
           },
         ),
-        ElevatedButton(
+        FilledButton(
           child: const Text("Criar"),
           onPressed: () {
             final newNota = Nota(

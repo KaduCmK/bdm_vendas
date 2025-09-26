@@ -82,7 +82,6 @@ class _ProductListHeader extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 2.0, vertical: 4.0),
       child: Row(
         children: [
-          SizedBox(width: 40),
           Expanded(
             flex: 6,
             child: Text(
@@ -108,7 +107,7 @@ class _ProductListHeader extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(width: 40),
+          SizedBox(width: 75),
         ],
       ),
     );

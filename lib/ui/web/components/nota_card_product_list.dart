@@ -23,6 +23,14 @@ class ProductList extends StatelessWidget {
     context.read<NotaBloc>().add(UpdateNota(notaAtualizada));
   }
 
+  void _reduzirQuantidade(BuildContext context, int index) {
+    final produtos = List<Produto>.from(nota.produtos);
+    final produto = produtos[index];
+    produtos[index] = produto.copyWith(quantidade: produto.quantidade - 1);
+    final notaAtualizada = nota.copyWith(produtos: produtos);
+    context.read<NotaBloc>().add(UpdateNota(notaAtualizada));
+  }
+
   @override
   Widget build(BuildContext context) {
     final formatadorReais = NumberFormat.currency(
@@ -38,15 +46,6 @@ class ProductList extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SizedBox(
-                width: 32,
-                child: IconButton(
-                  icon: const Icon(Icons.delete_outline),
-                  color: Colors.red,
-                  tooltip: 'Remover produto',
-                  onPressed: () => _removerProduto(context, index),
-                ),
-              ),
               Expanded(flex: 6, child: Text(produto.nome)),
               Expanded(flex: 2, child: Text('${produto.quantidade}')),
               Expanded(
@@ -65,7 +64,17 @@ class ProductList extends StatelessWidget {
                 child: IconButton(
                   icon: const Icon(Icons.add_circle_outline),
                   onPressed: () => _incrementarQuantidade(context, index),
-                  tooltip: 'Adicionar um',
+                  tooltip: 'Clique para adicionar um',
+                ),
+              ),
+              SizedBox(
+                width: 32,
+                child: IconButton(
+                  icon: const Icon(Icons.delete_outline),
+                  color: Colors.red,
+                  tooltip: 'Clique para remover um; segure para apagar o item',
+                  onPressed: () => _reduzirQuantidade(context, index),
+                  onLongPress: () => _removerProduto(context, index),
                 ),
               ),
             ],

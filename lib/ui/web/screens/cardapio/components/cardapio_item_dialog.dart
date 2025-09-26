@@ -3,7 +3,7 @@ import 'package:bdm_vendas/bloc/categoria/categoria_bloc.dart';
 import 'package:bdm_vendas/models/cardapio/cardapio_item.dart';
 import 'package:bdm_vendas/models/cardapio/categoria.dart';
 import 'package:bdm_vendas/ui/shared/currency_input_formatter.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // import firestore
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -126,7 +126,7 @@ class _CardapioItemDialogState extends State<CardapioItemDialog> {
                   children: [
                     Expanded(
                       child: DropdownButtonFormField<TipoItem>(
-                        value: _selectedTipo,
+                        initialValue: _selectedTipo,
                         onChanged:
                             (value) => setState(() {
                               _selectedTipo = value;
@@ -171,7 +171,7 @@ class _CardapioItemDialogState extends State<CardapioItemDialog> {
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<String>(
-                  value: _selectedCategoriaId,
+                  initialValue: _selectedCategoriaId,
                   hint: const Text('Selecione'),
                   // Usa a lista filtrada para as opções
                   items:

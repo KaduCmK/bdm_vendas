@@ -8,21 +8,23 @@ class ClienteRepositoryImpl extends ClienteRepository {
   // Carrega a lista completa de clientes do Firestore uma única vez.
   @override
   Future<List<Cliente>> getClientes() async {
-    final snapshot = await _firestore
-        .collection('clientes')
-        .orderBy('nome') // Opcional: ordena por nome
-        .get();
-        
-    return snapshot.docs
-        .map((doc) => Cliente.fromMap(doc.id, doc.data()))
-        .toList();
+    final snapshot = await _firestore.collection('clientes').get();
+
+    final clientes =
+        snapshot.docs.map((doc) => Cliente.fromMap(doc.id, doc.data())).toList()
+          ..sort(
+            (a, b) => a.nome.toLowerCase().compareTo(b.nome.toLowerCase()),
+          );
+
+    return clientes;
   }
 
   // Adiciona um novo cliente
   @override
   Future<void> addCliente(String nome) {
+    final nomeCapitalizado = nome[0].toUpperCase() + nome.substring(1);
     return _firestore.collection('clientes').add({
-      'nome': nome,
+      'nome': nomeCapitalizado,
       'dataCriacao': FieldValue.serverTimestamp(), // Usa a hora do servidor
     });
   }

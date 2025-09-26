@@ -2,7 +2,6 @@ import 'package:bdm_vendas/ui/web/screens/cardapio/cardapio_management_screen.da
 import 'package:bdm_vendas/ui/web/screens/clientes/clientes_screen.dart';
 import 'package:bdm_vendas/ui/web/screens/notas/notas_screen.dart';
 import 'package:bdm_vendas/ui/web/screens/notas_arquivadas_screen.dart';
-import 'package:bdm_vendas/ui/web/screens/notas/components/nova_nota_dialog.dart';
 import 'package:flutter/material.dart';
 
 class Dashboard extends StatefulWidget {
@@ -44,16 +43,6 @@ class _DashboardState extends State<Dashboard> {
             selectedIndex: _selectedIndex,
             onDestinationSelected: _navigateToIndex,
             labelType: NavigationRailLabelType.all,
-            leading: FloatingActionButton.extended(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => const NovaNotaDialog(),
-                );
-              },
-              icon: const Icon(Icons.add),
-              label: const Text("Nova Nota"),
-            ),
             destinations: const [
               NavigationRailDestination(
                 icon: Icon(Icons.person_2_outlined),
