@@ -9,23 +9,23 @@ class ProductList extends StatelessWidget {
   final Nota nota;
   const ProductList({super.key, required this.nota});
 
-  void _removerProduto(BuildContext context, int index) {
-    final produtos = List<Produto>.from(nota.produtos)..removeAt(index);
+  void _removerProduto(BuildContext context, Produto produto) {
+    final produtos = List<Produto>.from(nota.produtos)..remove(produto);
     final notaAtualizada = nota.copyWith(produtos: produtos);
     context.read<NotaBloc>().add(UpdateNota(notaAtualizada));
   }
 
-  void _incrementarQuantidade(BuildContext context, int index) {
+  void _incrementarQuantidade(BuildContext context, Produto produto) {
     final produtos = List<Produto>.from(nota.produtos);
-    final produto = produtos[index];
+    final index = produtos.indexOf(produto);
     produtos[index] = produto.copyWith(quantidade: produto.quantidade + 1);
     final notaAtualizada = nota.copyWith(produtos: produtos);
     context.read<NotaBloc>().add(UpdateNota(notaAtualizada));
   }
 
-  void _reduzirQuantidade(BuildContext context, int index) {
+  void _reduzirQuantidade(BuildContext context, Produto produto) {
     final produtos = List<Produto>.from(nota.produtos);
-    final produto = produtos[index];
+    final index = produtos.indexOf(produto);
     produtos[index] = produto.copyWith(quantidade: produto.quantidade - 1);
     final notaAtualizada = nota.copyWith(produtos: produtos);
     context.read<NotaBloc>().add(UpdateNota(notaAtualizada));
@@ -37,10 +37,13 @@ class ProductList extends StatelessWidget {
       locale: 'pt_BR',
       symbol: 'R\$',
     );
+    final sortedProdutos = List<Produto>.from(nota.produtos)
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
     return ListView.builder(
-      itemCount: nota.produtos.length,
+      itemCount: sortedProdutos.length,
       itemBuilder: (context, index) {
-        final produto = nota.produtos[index];
+        final produto = sortedProdutos[index];
         return Padding(
           padding: const EdgeInsets.all(2.0),
           child: Row(
@@ -63,7 +66,7 @@ class ProductList extends StatelessWidget {
                 width: 40,
                 child: IconButton(
                   icon: const Icon(Icons.add_circle_outline),
-                  onPressed: () => _incrementarQuantidade(context, index),
+                  onPressed: () => _incrementarQuantidade(context, produto),
                   tooltip: 'Clique para adicionar um',
                 ),
               ),
@@ -73,8 +76,8 @@ class ProductList extends StatelessWidget {
                   icon: const Icon(Icons.delete_outline),
                   color: Colors.red,
                   tooltip: 'Clique para remover um; segure para apagar o item',
-                  onPressed: () => _reduzirQuantidade(context, index),
-                  onLongPress: () => _removerProduto(context, index),
+                  onPressed: () => _reduzirQuantidade(context, produto),
+                  onLongPress: () => _removerProduto(context, produto),
                 ),
               ),
             ],
