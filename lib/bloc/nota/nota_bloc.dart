@@ -64,7 +64,12 @@ class NotaBloc extends Bloc<NotaEvent, NotaState> {
   }
 
   void _onNotaUpdated(_NotaUpdated event, Emitter<NotaState> emit) {
-    emit(SingleNotaLoaded(event.nota));
+    if (state is SingleNotaLoaded) {
+      final currentState = state as SingleNotaLoaded;
+      emit(SingleNotaLoaded(event.nota, loadingNoteIds: currentState.loadingNoteIds));
+    } else {
+      emit(SingleNotaLoaded(event.nota));
+    }
   }
 
   void _onAddNota(AddNota event, Emitter<NotaState> emit) async {
@@ -81,43 +86,78 @@ class NotaBloc extends Bloc<NotaEvent, NotaState> {
   }
 
   void _onUpdateNota(UpdateNota event, Emitter<NotaState> emit) async {
-    try {
-      await _repository.updateNota(event.nota);
-      final notas = await _repository.getNotas();
-      emit(NotaLoaded(notas));
-    } catch (e) {
-      _logger.e(e.toString());
-      emit(NotaError("Falha ao atualizar nota: ${e.toString()}"));
+    final currentState = state;
+    if (currentState is NotaLoaded) {
+      try {
+        final loadingIds = Set<String>.from(currentState.loadingNoteIds)..add(event.nota.id!);
+        emit(NotaLoaded(currentState.notas, loadingNoteIds: loadingIds));
+
+        await _repository.updateNota(event.nota);
+        final notas = await _repository.getNotas();
+
+        final newLoadingIds = Set<String>.from(loadingIds)..remove(event.nota.id!);
+        emit(NotaLoaded(notas, loadingNoteIds: newLoadingIds));
+      } catch (e) {
+        _logger.e(e.toString());
+        emit(NotaError("Falha ao atualizar nota: ${e.toString()}"));
+      }
     }
   }
 
   void _onAddProduto(AddProduto event, Emitter<NotaState> emit) async {
-    try {
-      await _repository.addProdutoToNota(event.notaId, event.produto);
-      add(LoadNotas());
-    } catch (e) {
-      _logger.e(e.toString());
-      emit(NotaError("Falha ao adicionar produto: ${e.toString()}"));
+    final currentState = state;
+    if (currentState is NotaLoaded) {
+      try {
+        final loadingIds = Set<String>.from(currentState.loadingNoteIds)..add(event.notaId);
+        emit(NotaLoaded(currentState.notas, loadingNoteIds: loadingIds));
+
+        await _repository.addProdutoToNota(event.notaId, event.produto);
+        final notas = await _repository.getNotas();
+
+        final newLoadingIds = Set<String>.from(loadingIds)..remove(event.notaId);
+        emit(NotaLoaded(notas, loadingNoteIds: newLoadingIds));
+      } catch (e) {
+        _logger.e(e.toString());
+        emit(NotaError("Falha ao adicionar produto: ${e.toString()}"));
+      }
     }
   }
 
   void _onAddProdutos(AddProdutos event, Emitter<NotaState> emit) async {
-    try {
-      await _repository.addProdutosToNota(event.notaId, event.produtos);
-      add(LoadNotas());
-    } catch (e) {
-      _logger.e(e.toString());
-      emit(NotaError("Falha ao adicionar produtos: ${e.toString()}"));
+    final currentState = state;
+    if (currentState is NotaLoaded) {
+      try {
+        final loadingIds = Set<String>.from(currentState.loadingNoteIds)..add(event.notaId);
+        emit(NotaLoaded(currentState.notas, loadingNoteIds: loadingIds));
+
+        await _repository.addProdutosToNota(event.notaId, event.produtos);
+        final notas = await _repository.getNotas();
+
+        final newLoadingIds = Set<String>.from(loadingIds)..remove(event.notaId);
+        emit(NotaLoaded(notas, loadingNoteIds: newLoadingIds));
+      } catch (e) {
+        _logger.e(e.toString());
+        emit(NotaError("Falha ao adicionar produtos: ${e.toString()}"));
+      }
     }
   }
 
   void _onRemoveProduto(RemoveProduto event, Emitter<NotaState> emit) async {
-    try {
-      await _repository.removeProdutoFromNota(event.notaId, event.produto);
-      add(LoadNotas());
-    } catch (e) {
-      _logger.e(e.toString());
-      emit(NotaError("Falha ao remover produto: ${e.toString()}"));
+    final currentState = state;
+    if (currentState is NotaLoaded) {
+      try {
+        final loadingIds = Set<String>.from(currentState.loadingNoteIds)..add(event.notaId);
+        emit(NotaLoaded(currentState.notas, loadingNoteIds: loadingIds));
+
+        await _repository.removeProdutoFromNota(event.notaId, event.produto);
+        final notas = await _repository.getNotas();
+
+        final newLoadingIds = Set<String>.from(loadingIds)..remove(event.notaId);
+        emit(NotaLoaded(notas, loadingNoteIds: newLoadingIds));
+      } catch (e) {
+        _logger.e(e.toString());
+        emit(NotaError("Falha ao remover produto: ${e.toString()}"));
+      }
     }
   }
 }

@@ -14,7 +14,8 @@ import 'package:intl/intl.dart';
 class NotaCard extends StatelessWidget {
   final Nota nota;
   final Cliente? cliente;
-  const NotaCard({super.key, required this.nota, this.cliente});
+  final bool isLoading;
+  const NotaCard({super.key, required this.nota, this.cliente, this.isLoading = false});
 
   void _showFecharContaDialog(BuildContext context) {
     showDialog(
@@ -32,12 +33,7 @@ class NotaCard extends StatelessWidget {
     return Card(
       child: Column(
         children: [
-          NotaCardHeader(cliente: cliente, nota: nota),
-          if (nota.isSplitted)
-            const Tooltip(
-              message: 'Esta nota usa o novo formato de armazenamento de produtos.',
-              child: Icon(Icons.star, size: 16, color: Colors.amber),
-            ),
+          NotaCardHeader(cliente: cliente, nota: nota, isLoading: isLoading),
           const Divider(),
           _ProductListHeader(),
           Expanded(child: ProductList(nota: nota)),

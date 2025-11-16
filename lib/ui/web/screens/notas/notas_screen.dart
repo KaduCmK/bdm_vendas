@@ -111,8 +111,9 @@ class _NotasScreenState extends State<NotasScreen> {
                               filteredNotas[index]; // Usando a lista filtrada
                           final cliente = clienteState.clientes
                               .firstWhereOrNull((c) => c.id == nota.clienteId);
+                          final isLoading = notaState.loadingNoteIds.contains(nota.id);
 
-                          return NotaCard(nota: nota, cliente: cliente);
+                          return NotaCard(nota: nota, cliente: cliente, isLoading: isLoading);
                         },
                       ),
                     ),
