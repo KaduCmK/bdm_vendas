@@ -1,5 +1,7 @@
 import 'package:bdm_vendas/bloc/nota/nota_bloc.dart';
+import 'package:bdm_vendas/models/produto.dart';
 import 'package:bdm_vendas/ui/shared/components/live_circle.dart';
+import 'package:collection/collection.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -54,6 +56,24 @@ class _ViewNotaScreenState extends State<ViewNotaScreen> {
               symbol: 'R\$',
             );
 
+            final groupedProdutos =
+                groupBy(nota.produtos, (Produto p) => p.nome);
+
+            final uniqueProdutos = groupedProdutos.keys.map((nome) {
+              final produtos = groupedProdutos[nome]!;
+              final firstProduto = produtos.first;
+              final quantidade = nota.isSplitted ? produtos.length : 1;
+              final subtotal = firstProduto.valorUnitario * quantidade;
+              return {
+                'produto': firstProduto,
+                'quantidade': quantidade,
+                'subtotal': subtotal,
+              };
+            }).toList()
+              ..sort((a, b) => (b['produto'] as Produto)
+                  .createdAt
+                  .compareTo((a['produto'] as Produto).createdAt));
+
             return ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 600),
               child: Card(
@@ -78,7 +98,7 @@ class _ViewNotaScreenState extends State<ViewNotaScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          LiveCircle(),
+                          const LiveCircle(),
                           Text(
                             'Em tempo real',
                             style: textTheme.titleSmall?.copyWith(
@@ -90,17 +110,21 @@ class _ViewNotaScreenState extends State<ViewNotaScreen> {
                       const Divider(height: 28),
                       Expanded(
                         child: ListView.builder(
-                          itemCount: nota.produtos.length,
+                          itemCount: uniqueProdutos.length,
                           itemBuilder: (context, index) {
-                            final produto = nota.produtos[index];
+                            final item = uniqueProdutos[index];
+                            final produto = item['produto'] as Produto;
+                            final quantidade = item['quantidade'] as int;
+                            final subtotal = item['subtotal'] as double;
+
                             return ListTile(
                               title: Text(produto.nome),
                               subtitle: Text(
-                                '${produto.quantidade} x ${formatadorReais.format(produto.valorUnitario)}',
+                                '$quantidade x ${formatadorReais.format(produto.valorUnitario)}',
                                 style: textTheme.labelMedium,
                               ),
                               trailing: Text(
-                                formatadorReais.format(produto.subtotal),
+                                formatadorReais.format(subtotal),
                                 style: textTheme.titleSmall,
                               ),
                             );
@@ -117,7 +141,9 @@ class _ViewNotaScreenState extends State<ViewNotaScreen> {
                           ),
                           Text(
                             formatadorReais.format(nota.total),
-                            style: Theme.of(context).textTheme.titleLarge
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleLarge
                                 ?.copyWith(fontWeight: FontWeight.bold),
                           ),
                         ],

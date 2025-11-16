@@ -33,6 +33,11 @@ class NotaCard extends StatelessWidget {
       child: Column(
         children: [
           NotaCardHeader(cliente: cliente, nota: nota),
+          if (nota.isSplitted)
+            const Tooltip(
+              message: 'Esta nota usa o novo formato de armazenamento de produtos.',
+              child: Icon(Icons.star, size: 16, color: Colors.amber),
+            ),
           const Divider(),
           _ProductListHeader(),
           Expanded(child: ProductList(nota: nota)),
@@ -126,24 +131,24 @@ class _AddProductRow extends StatefulWidget {
 
 class _AddProductRowState extends State<_AddProductRow> {
   final _nomeController = TextEditingController();
-  final _qtdController = TextEditingController(text: '1');
   final _precoController = TextEditingController();
+  final _qtdController = TextEditingController(text: '1');
 
   @override
   void dispose() {
     _nomeController.dispose();
-    _qtdController.dispose();
     _precoController.dispose();
+    _qtdController.dispose();
     super.dispose();
   }
 
   void _adicionarProduto() {
     final nome = _nomeController.text;
-    final qtd = int.tryParse(_qtdController.text) ?? 1;
     final precoString = _precoController.text
         .replaceAll('.', '')
         .replaceAll(',', '.');
     final preco = double.tryParse(precoString) ?? 0.0;
+    final qtd = int.tryParse(_qtdController.text) ?? 1;
 
     if (nome.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -155,20 +160,33 @@ class _AddProductRowState extends State<_AddProductRow> {
       return;
     }
 
-    final novoProduto = Produto(
-      nome: nome,
-      quantidade: qtd,
-      valorUnitario: preco,
-    );
-    final novosProdutos = List<Produto>.from(widget.nota.produtos)
-      ..add(novoProduto);
-    final notaAtualizada = widget.nota.copyWith(produtos: novosProdutos);
+    if (widget.nota.isSplitted) {
+      final produtos = List.generate(
+        qtd,
+        (index) => Produto(
+          nome: nome,
+          valorUnitario: preco,
+          createdAt: DateTime.now(),
+        ),
+      );
+      context.read<NotaBloc>().add(AddProdutos(widget.nota.id!, produtos));
+    } else {
+      // Mantém a lógica antiga para notas não divididas
+      final novoProduto = Produto(
+        nome: nome,
+        valorUnitario: preco,
+        createdAt: DateTime.now(),
+      );
+      final novosProdutos = List<Produto>.from(widget.nota.produtos)
+        ..add(novoProduto);
+      final notaAtualizada = widget.nota.copyWith(produtos: novosProdutos);
+      context.read<NotaBloc>().add(UpdateNota(notaAtualizada));
+    }
 
-    context.read<NotaBloc>().add(UpdateNota(notaAtualizada));
 
     _nomeController.clear();
-    _qtdController.text = '1';
     _precoController.clear();
+    _qtdController.text = '1';
     FocusScope.of(context).unfocus();
   }
 

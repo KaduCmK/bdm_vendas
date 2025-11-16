@@ -1,5 +1,6 @@
 import 'package:bdm_vendas/models/cliente.dart';
 import 'package:bdm_vendas/models/nota.dart';
+import 'package:bdm_vendas/ui/web/dialogs/timeline_dialog.dart';
 import 'package:bdm_vendas/ui/web/screens/notas/components/share_nota_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -21,16 +22,28 @@ class NotaCardHeader extends StatelessWidget {
           Text(DateFormat('dd/MM/yyyy').format(nota.dataCriacao)),
         ],
       ),
-      trailing: IconButton(
-        onPressed:
-            () => showDialog(
-              context: context,
-              builder:
-                  (context) => ShareNotaDialog(
-                    notaUrl: '${Uri.base.origin}/#/view-nota/${nota.id}',
-                  ),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (nota.isSplitted)
+            IconButton(
+              onPressed: () => showDialog(
+                context: context,
+                builder: (context) => TimelineDialog(nota: nota),
+              ),
+              icon: const Icon(Icons.history),
+              tooltip: 'Histórico da Nota',
             ),
-        icon: Icon(Icons.qr_code),
+          IconButton(
+            onPressed: () => showDialog(
+              context: context,
+              builder: (context) => ShareNotaDialog(
+                notaUrl: '${Uri.base.origin}/#/view-nota/${nota.id}',
+              ),
+            ),
+            icon: const Icon(Icons.qr_code),
+          ),
+        ],
       ),
     );
   }

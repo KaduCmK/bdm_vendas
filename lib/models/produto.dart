@@ -4,32 +4,28 @@ import 'package:equatable/equatable.dart';
 class Produto extends Equatable {
   final String? id;
   final String nome;
-  final int quantidade;
   final double valorUnitario;
   final DateTime createdAt;
 
-  Produto({
+  const Produto({
     this.id,
     this.nome = '',
-    this.quantidade = 1,
     this.valorUnitario = 0.0,
-    DateTime? createdAt,
-  }) : createdAt = createdAt ?? DateTime.now();
+    required this.createdAt,
+  });
 
   // Calcula o subtotal do produto
-  double get subtotal => quantidade * valorUnitario;
+  double get subtotal => valorUnitario;
 
   Produto copyWith({
     String? id,
     String? nome,
-    int? quantidade,
     double? valorUnitario,
     DateTime? createdAt,
   }) {
     return Produto(
       id: id ?? this.id,
       nome: nome ?? this.nome,
-      quantidade: quantidade ?? this.quantidade,
       valorUnitario: valorUnitario ?? this.valorUnitario,
       createdAt: createdAt ?? this.createdAt,
     );
@@ -39,7 +35,6 @@ class Produto extends Equatable {
     return {
       'id': id,
       'nome': nome,
-      'quantidade': quantidade,
       'valorUnitario': valorUnitario,
       'createdAt': createdAt,
     };
@@ -49,12 +44,11 @@ class Produto extends Equatable {
     return Produto(
       id: map['id'],
       nome: map['nome'] ?? '',
-      quantidade: map['quantidade'] ?? 1,
       valorUnitario: (map['valorUnitario'] ?? 0.0).toDouble(),
       createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
 
   @override
-  List<Object?> get props => [id, nome, quantidade, valorUnitario, createdAt];
+  List<Object?> get props => [id, nome, valorUnitario, createdAt];
 }

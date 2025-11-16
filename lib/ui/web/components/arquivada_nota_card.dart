@@ -1,5 +1,7 @@
 import 'package:bdm_vendas/models/cliente.dart';
 import 'package:bdm_vendas/models/nota.dart';
+import 'package:bdm_vendas/models/produto.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -13,6 +15,23 @@ class ArquivadaNotaCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final formatadorReais =
         NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
+
+    final groupedProdutos = groupBy(nota.produtos, (Produto p) => p.nome);
+
+    final uniqueProdutos = groupedProdutos.keys.map((nome) {
+      final produtos = groupedProdutos[nome]!;
+      final firstProduto = produtos.first;
+      final quantidade = nota.isSplitted ? produtos.length : 1;
+      final subtotal = firstProduto.valorUnitario * quantidade;
+      return {
+        'produto': firstProduto,
+        'quantidade': quantidade,
+        'subtotal': subtotal,
+      };
+    }).toList()
+      ..sort((a, b) => (b['produto'] as Produto)
+          .createdAt
+          .compareTo((a['produto'] as Produto).createdAt));
 
     return Card(
       margin: const EdgeInsets.all(8.0),
@@ -53,14 +72,18 @@ class ArquivadaNotaCard extends StatelessWidget {
             ),
             Expanded(
               child: ListView.builder(
-                itemCount: nota.produtos.length,
+                itemCount: uniqueProdutos.length,
                 itemBuilder: (context, index) {
-                  final produto = nota.produtos[index];
+                  final item = uniqueProdutos[index];
+                  final produto = item['produto'] as Produto;
+                  final quantidade = item['quantidade'] as int;
+                  final subtotal = item['subtotal'] as double;
+
                   return ListTile(
                     dense: true,
                     title: Text(produto.nome),
-                    leading: Text("${produto.quantidade}x"),
-                    trailing: Text(formatadorReais.format(produto.subtotal)),
+                    leading: Text("${quantidade}x"),
+                    trailing: Text(formatadorReais.format(subtotal)),
                   );
                 },
               ),
@@ -69,7 +92,7 @@ class ArquivadaNotaCard extends StatelessWidget {
 
             // Rodapé com Total e Status
             Padding(
-              padding: const EdgeInsets.only(top: 8.0),
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
