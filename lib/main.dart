@@ -5,6 +5,7 @@ import 'package:bdm_vendas/bloc/cliente/cliente_bloc.dart';
 import 'package:bdm_vendas/bloc/nota/nota_bloc.dart';
 import 'package:bdm_vendas/firebase_options.dart';
 import 'package:bdm_vendas/service_locator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,6 +14,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await FirebaseAuth.instance.signInAnonymously(); // Sign in anonymously here
 
   setupLocator();
 

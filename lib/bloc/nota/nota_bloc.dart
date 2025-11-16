@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:bdm_vendas/models/pagamento.dart';
 import 'package:bdm_vendas/models/produto.dart';
 import 'package:equatable/equatable.dart';
 import 'package:bdm_vendas/models/nota.dart';
@@ -28,6 +29,7 @@ class NotaBloc extends Bloc<NotaEvent, NotaState> {
     on<AddProdutos>(_onAddProdutos);
     on<RemoveProduto>(_onRemoveProduto);
     on<DeleteNota>(_onDeleteNota);
+    on<AddPagamento>(_onAddPagamento);
   }
 
   void _onLoadNotas(LoadNotas event, Emitter<NotaState> emit) async {
@@ -176,6 +178,25 @@ class NotaBloc extends Bloc<NotaEvent, NotaState> {
       } catch (e) {
         _logger.e(e.toString());
         emit(NotaError("Falha ao deletar nota: ${e.toString()}"));
+      }
+    }
+  }
+
+  void _onAddPagamento(AddPagamento event, Emitter<NotaState> emit) async {
+    final currentState = state;
+    if (currentState is NotaLoaded) {
+      try {
+        final loadingIds = Set<String>.from(currentState.loadingNoteIds)..add(event.notaId);
+        emit(NotaLoaded(currentState.notas, loadingNoteIds: loadingIds));
+
+        await _repository.addPagamentoToNota(event.notaId, event.pagamento);
+        final notas = await _repository.getNotas();
+
+        final newLoadingIds = Set<String>.from(loadingIds)..remove(event.notaId);
+        emit(NotaLoaded(notas, loadingNoteIds: newLoadingIds));
+      } catch (e) {
+        _logger.e(e.toString());
+        emit(NotaError("Falha ao adicionar pagamento: ${e.toString()}"));
       }
     }
   }

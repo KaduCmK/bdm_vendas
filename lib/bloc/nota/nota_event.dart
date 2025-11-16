@@ -91,3 +91,13 @@ class DeleteNota extends NotaEvent {
   @override
   List<Object> get props => [notaId];
 }
+
+class AddPagamento extends NotaEvent {
+  final String notaId;
+  final Pagamento pagamento;
+
+  const AddPagamento(this.notaId, this.pagamento);
+
+  @override
+  List<Object> get props => [notaId, pagamento];
+}

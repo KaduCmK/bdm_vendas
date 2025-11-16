@@ -6,6 +6,7 @@ import 'package:bdm_vendas/ui/shared/currency_input_formatter.dart';
 import 'package:bdm_vendas/ui/web/components/nota_card_header.dart';
 import 'package:bdm_vendas/ui/web/components/nota_card_product_list.dart';
 import 'package:bdm_vendas/ui/web/dialogs/fechar_conta_dialog.dart';
+import 'package:bdm_vendas/ui/web/dialogs/pagamento_parcial_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -46,25 +47,57 @@ class NotaCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(
-                    'Total: ${NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$').format(nota.total)}',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  ElevatedButton.icon(
-                    onPressed: () => _showFecharContaDialog(context),
-                    icon: const Icon(Icons.check_circle),
-                    label: const Text('Fechar a Conta'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Total: ${NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$').format(nota.total)}',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
-                    ),
+                      if (nota.totalRestante != nota.total)
+                        Text(
+                          'Restante: ${NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$').format(nota.totalRestante)}',
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.orange,
+                              ),
+                        ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (_) => PagamentoParcialDialog(
+                              nota: nota,
+                              onConfirm: (pagamento) {
+                                context.read<NotaBloc>().add(AddPagamento(nota.id!, pagamento));
+                              },
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.payment),
+                        tooltip: 'Pagamento Parcial',
+                      ),
+                      ElevatedButton.icon(
+                        onPressed: () => _showFecharContaDialog(context),
+                        icon: const Icon(Icons.check_circle),
+                        label: const Text('Fechar a Conta'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

@@ -1,4 +1,5 @@
 import 'package:bdm_vendas/models/nota.dart';
+import 'package:bdm_vendas/models/pagamento.dart';
 import 'package:bdm_vendas/models/produto.dart';
 
 abstract class NotaRepository {
@@ -11,4 +12,5 @@ abstract class NotaRepository {
   Future<void> addProdutosToNota(String notaId, List<Produto> produtos);
   Future<void> removeProdutoFromNota(String notaId, Produto produto);
   Future<void> deleteNota(String notaId);
+  Future<void> addPagamentoToNota(String notaId, Pagamento pagamento);
 }

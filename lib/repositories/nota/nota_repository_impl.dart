@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bdm_vendas/models/pagamento.dart';
 import 'package:bdm_vendas/models/produto.dart';
 import 'package:bdm_vendas/repositories/nota/nota_repository.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -23,7 +24,11 @@ class NotaRepositoryImpl extends NotaRepository {
         final produtos = produtosSnapshot.docs
             .map((produtoDoc) => Produto.fromMap(produtoDoc.data()))
             .toList();
-        nota = nota.copyWith(produtos: produtos);
+        
+        final pagamentosSnapshot = await doc.reference.collection('pagamentos').get();
+        final pagamentos = pagamentosSnapshot.docs.map((pagamentoDoc) => Pagamento.fromMap(pagamentoDoc)).toList();
+
+        nota = nota.copyWith(produtos: produtos, pagamentos: pagamentos);
       }
       return nota;
     }).toList());
@@ -44,7 +49,11 @@ class NotaRepositoryImpl extends NotaRepository {
       final produtos = produtosSnapshot.docs
           .map((produtoDoc) => Produto.fromMap(produtoDoc.data()))
           .toList();
-      nota = nota.copyWith(produtos: produtos);
+
+      final pagamentosSnapshot = await doc.reference.collection('pagamentos').get();
+      final pagamentos = pagamentosSnapshot.docs.map((pagamentoDoc) => Pagamento.fromMap(pagamentoDoc)).toList();
+
+      nota = nota.copyWith(produtos: produtos, pagamentos: pagamentos);
     }
 
     return nota;
@@ -63,7 +72,11 @@ class NotaRepositoryImpl extends NotaRepository {
         final produtos = produtosSnapshot.docs
             .map((produtoDoc) => Produto.fromMap(produtoDoc.data()))
             .toList();
-        nota = nota.copyWith(produtos: produtos);
+
+        final pagamentosSnapshot = await doc.reference.collection('pagamentos').get();
+        final pagamentos = pagamentosSnapshot.docs.map((pagamentoDoc) => Pagamento.fromMap(pagamentoDoc)).toList();
+
+        nota = nota.copyWith(produtos: produtos, pagamentos: pagamentos);
       }
       return nota;
     });
@@ -140,5 +153,10 @@ class NotaRepositoryImpl extends NotaRepository {
     await batch.commit();
 
     await notaRef.delete();
+  }
+
+  @override
+  Future<void> addPagamentoToNota(String notaId, Pagamento pagamento) {
+    return _firestore.collection('notas').doc(notaId).collection('pagamentos').add(pagamento.toMap());
   }
 }

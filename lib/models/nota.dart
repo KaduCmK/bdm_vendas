@@ -1,6 +1,7 @@
+import 'package:bdm_vendas/models/pagamento.dart';
+import 'package:bdm_vendas/models/produto.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
-import 'package:bdm_vendas/models/produto.dart';
 
 // Enum para o status da nota
 enum NotaStatus { emAberto, pagoCredito, pagoDebito, pagoPix, pagoDinheiro }
@@ -30,6 +31,7 @@ class Nota extends Equatable {
   final String clienteId;
   final NotaStatus status;
   final bool isSplitted;
+  final List<Pagamento> pagamentos;
 
   const Nota({
     this.id,
@@ -39,9 +41,12 @@ class Nota extends Equatable {
     required this.clienteId,
     this.status = NotaStatus.emAberto,
     this.isSplitted = true,
+    this.pagamentos = const [],
   });
 
   double get total => produtos.fold(0, (soma, item) => soma + item.subtotal);
+  double get totalPago => pagamentos.fold(0, (soma, item) => soma + item.valor);
+  double get totalRestante => total - totalPago;
 
   Nota copyWith({
     String? id,
@@ -51,6 +56,7 @@ class Nota extends Equatable {
     String? clienteId,
     NotaStatus? status,
     bool? isSplitted,
+    List<Pagamento>? pagamentos,
   }) {
     return Nota(
       id: id ?? this.id,
@@ -60,6 +66,7 @@ class Nota extends Equatable {
       clienteId: clienteId ?? this.clienteId,
       status: status ?? this.status,
       isSplitted: isSplitted ?? this.isSplitted,
+      pagamentos: pagamentos ?? this.pagamentos,
     );
   }
 
@@ -97,6 +104,7 @@ class Nota extends Equatable {
         orElse: () => NotaStatus.emAberto,
       ),
       isSplitted: data['isSplitted'] ?? false,
+      pagamentos: const [], // Os pagamentos serão carregados da subcoleção
     );
   }
 
@@ -115,6 +123,7 @@ class Nota extends Equatable {
         orElse: () => NotaStatus.emAberto,
       ),
       isSplitted: false,
+      pagamentos: const [],
     );
   }
 
@@ -127,5 +136,6 @@ class Nota extends Equatable {
         clienteId,
         status,
         isSplitted,
+        pagamentos,
       ];
 }
