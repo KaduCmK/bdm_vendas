@@ -63,14 +63,6 @@ class _NotasScreenState extends State<NotasScreen> {
                       );
                     }).toList();
 
-                if (filteredNotas.isEmpty) {
-                  return const Center(
-                    child: Text(
-                      'Nenhuma nota em aberto no momento.',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                  );
-                }
                 return Column(
                   children: [
                     Padding(
@@ -90,32 +82,43 @@ class _NotasScreenState extends State<NotasScreen> {
                           IconButton(
                             onPressed:
                                 () => context.read<NotaBloc>().add(LoadNotas()),
-                            icon: Icon(Icons.refresh),
+                            icon: const Icon(Icons.refresh),
                           ),
                         ],
                       ),
                     ),
                     Expanded(
-                      child: GridView.builder(
-                        padding: const EdgeInsets.all(4),
-                        gridDelegate:
-                            const SliverGridDelegateWithMaxCrossAxisExtent(
-                              maxCrossAxisExtent: 540,
-                              childAspectRatio: 0.9,
-                              crossAxisSpacing: 4,
-                              mainAxisSpacing: 4,
-                            ),
-                        itemCount: filteredNotas.length,
-                        itemBuilder: (context, index) {
-                          final nota =
-                              filteredNotas[index]; // Usando a lista filtrada
-                          final cliente = clienteState.clientes
-                              .firstWhereOrNull((c) => c.id == nota.clienteId);
-                          final isLoading = notaState.loadingNoteIds.contains(nota.id);
+                      child: filteredNotas.isEmpty
+                          ? const Center(
+                              child: Text(
+                                'Nenhuma nota encontrada.',
+                                style: TextStyle(fontSize: 18),
+                              ),
+                            )
+                          : GridView.builder(
+                              padding: const EdgeInsets.all(4),
+                              gridDelegate:
+                                  const SliverGridDelegateWithMaxCrossAxisExtent(
+                                maxCrossAxisExtent: 540,
+                                childAspectRatio: 0.9,
+                                crossAxisSpacing: 4,
+                                mainAxisSpacing: 4,
+                              ),
+                              itemCount: filteredNotas.length,
+                              itemBuilder: (context, index) {
+                                final nota = filteredNotas[index];
+                                final cliente = clienteState.clientes
+                                    .firstWhereOrNull(
+                                        (c) => c.id == nota.clienteId);
+                                final isLoading =
+                                    notaState.loadingNoteIds.contains(nota.id);
 
-                          return NotaCard(nota: nota, cliente: cliente, isLoading: isLoading);
-                        },
-                      ),
+                                return NotaCard(
+                                    nota: nota,
+                                    cliente: cliente,
+                                    isLoading: isLoading);
+                              },
+                            ),
                     ),
                   ],
                 );

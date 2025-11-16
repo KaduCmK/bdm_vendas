@@ -128,7 +128,7 @@ class _ClientesScreenState extends State<ClientesScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 8),
               gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                 maxCrossAxisExtent: 230,
-                childAspectRatio: 3 / 2,
+                childAspectRatio: 3 / 2.1, // Adjusted to fix overflow
               ),
               itemCount: _filteredClientes.length,
               itemBuilder: (context, index) {

@@ -27,6 +27,7 @@ class NotaBloc extends Bloc<NotaEvent, NotaState> {
     on<AddProduto>(_onAddProduto);
     on<AddProdutos>(_onAddProdutos);
     on<RemoveProduto>(_onRemoveProduto);
+    on<DeleteNota>(_onDeleteNota);
   }
 
   void _onLoadNotas(LoadNotas event, Emitter<NotaState> emit) async {
@@ -157,6 +158,24 @@ class NotaBloc extends Bloc<NotaEvent, NotaState> {
       } catch (e) {
         _logger.e(e.toString());
         emit(NotaError("Falha ao remover produto: ${e.toString()}"));
+      }
+    }
+  }
+
+  void _onDeleteNota(DeleteNota event, Emitter<NotaState> emit) async {
+    final currentState = state;
+    if (currentState is NotaLoaded) {
+      try {
+        final loadingIds = Set<String>.from(currentState.loadingNoteIds)..add(event.notaId);
+        emit(NotaLoaded(currentState.notas, loadingNoteIds: loadingIds));
+
+        await _repository.deleteNota(event.notaId);
+        final notas = await _repository.getNotas();
+
+        emit(NotaLoaded(notas)); // No need to manage loading IDs here as the note is gone
+      } catch (e) {
+        _logger.e(e.toString());
+        emit(NotaError("Falha ao deletar nota: ${e.toString()}"));
       }
     }
   }

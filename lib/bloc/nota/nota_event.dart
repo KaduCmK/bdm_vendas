@@ -82,3 +82,12 @@ class RemoveProduto extends NotaEvent {
   @override
   List<Object> get props => [notaId, produto];
 }
+
+class DeleteNota extends NotaEvent {
+  final String notaId;
+
+  const DeleteNota(this.notaId);
+
+  @override
+  List<Object> get props => [notaId];
+}

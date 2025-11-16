@@ -10,4 +10,5 @@ abstract class NotaRepository {
   Future<void> addProdutoToNota(String notaId, Produto produto);
   Future<void> addProdutosToNota(String notaId, List<Produto> produtos);
   Future<void> removeProdutoFromNota(String notaId, Produto produto);
+  Future<void> deleteNota(String notaId);
 }

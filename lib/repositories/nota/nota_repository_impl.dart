@@ -127,4 +127,18 @@ class NotaRepositoryImpl extends NotaRepository {
       await snapshot.docs.first.reference.delete();
     }
   }
+
+  @override
+  Future<void> deleteNota(String notaId) async {
+    final notaRef = _firestore.collection('notas').doc(notaId);
+    final produtosSnapshot = await notaRef.collection('produtos').get();
+
+    final batch = _firestore.batch();
+    for (var doc in produtosSnapshot.docs) {
+      batch.delete(doc.reference);
+    }
+    await batch.commit();
+
+    await notaRef.delete();
+  }
 }
