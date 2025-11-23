@@ -7,6 +7,7 @@ class Pagamento extends Equatable {
   final String metodo;
   final DateTime data;
   final List<String> produtoIds;
+  final String? pagadorNome;
 
   const Pagamento({
     this.id,
@@ -14,6 +15,7 @@ class Pagamento extends Equatable {
     required this.metodo,
     required this.data,
     required this.produtoIds,
+    this.pagadorNome,
   });
 
   Pagamento copyWith({
@@ -22,6 +24,7 @@ class Pagamento extends Equatable {
     String? metodo,
     DateTime? data,
     List<String>? produtoIds,
+    String? pagadorNome,
   }) {
     return Pagamento(
       id: id ?? this.id,
@@ -29,6 +32,7 @@ class Pagamento extends Equatable {
       metodo: metodo ?? this.metodo,
       data: data ?? this.data,
       produtoIds: produtoIds ?? this.produtoIds,
+      pagadorNome: pagadorNome ?? this.pagadorNome,
     );
   }
 
@@ -38,6 +42,7 @@ class Pagamento extends Equatable {
       'metodo': metodo,
       'data': Timestamp.fromDate(data),
       'produtoIds': produtoIds,
+      'pagadorNome': pagadorNome,
     };
   }
 
@@ -49,9 +54,10 @@ class Pagamento extends Equatable {
       metodo: data['metodo'] as String,
       data: (data['data'] as Timestamp).toDate(),
       produtoIds: List<String>.from(data['produtoIds'] as List),
+      pagadorNome: data['pagadorNome'] as String?,
     );
   }
 
   @override
-  List<Object?> get props => [id, valor, metodo, data, produtoIds];
+  List<Object?> get props => [id, valor, metodo, data, produtoIds, pagadorNome];
 }

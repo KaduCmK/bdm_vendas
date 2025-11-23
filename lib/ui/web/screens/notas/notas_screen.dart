@@ -100,7 +100,7 @@ class _NotasScreenState extends State<NotasScreen> {
                               gridDelegate:
                                   const SliverGridDelegateWithMaxCrossAxisExtent(
                                 maxCrossAxisExtent: 540,
-                                childAspectRatio: 0.9,
+                                childAspectRatio: 0.8,
                                 crossAxisSpacing: 4,
                                 mainAxisSpacing: 4,
                               ),

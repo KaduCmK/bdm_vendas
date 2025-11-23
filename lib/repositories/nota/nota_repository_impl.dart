@@ -9,6 +9,14 @@ import '../../models/nota.dart';
 class NotaRepositoryImpl extends NotaRepository {
   final _firestore = FirebaseFirestore.instance;
 
+  Future<bool> _isSplitted(String notaId) async {
+    final doc = await _firestore.collection('notas').doc(notaId).get();
+    if (!doc.exists) {
+      return false;
+    }
+    return doc.data()!['isSplitted'] ?? false;
+  }
+
   @override
   Future<List<Nota>> getNotas() async {
     final snapshot = await _firestore
@@ -106,39 +114,66 @@ class NotaRepositoryImpl extends NotaRepository {
   }
 
   @override
-  Future<void> addProdutoToNota(String notaId, Produto produto) {
-    final produtoRef =
-        _firestore.collection('notas').doc(notaId).collection('produtos').doc();
-    return produtoRef.set(produto.copyWith(id: produtoRef.id).toMap());
+  Future<void> addProdutoToNota(String notaId, Produto produto) async {
+    if (await _isSplitted(notaId)) {
+      final produtoRef = _firestore
+          .collection('notas')
+          .doc(notaId)
+          .collection('produtos')
+          .doc();
+      return produtoRef.set(produto.copyWith(id: produtoRef.id).toMap());
+    }
+
+    final nota = await getNota(notaId);
+    final produtos = nota.produtos..add(produto);
+    return updateNota(nota.copyWith(produtos: produtos));
   }
 
   @override
-  Future<void> addProdutosToNota(String notaId, List<Produto> produtos) {
-    final batch = _firestore.batch();
-    final notaRef = _firestore.collection('notas').doc(notaId);
+  Future<void> addProdutosToNota(
+      String notaId, List<Produto> produtos) async {
+    if (await _isSplitted(notaId)) {
+      final batch = _firestore.batch();
+      final notaRef = _firestore.collection('notas').doc(notaId);
 
-    for (var produto in produtos) {
-      final produtoRef = notaRef.collection('produtos').doc();
-      batch.set(produtoRef, produto.copyWith(id: produtoRef.id).toMap());
+      for (var produto in produtos) {
+        final produtoRef = notaRef.collection('produtos').doc();
+        batch.set(produtoRef, produto.copyWith(id: produtoRef.id).toMap());
+      }
+
+      return batch.commit();
     }
 
-    return batch.commit();
+    final nota = await getNota(notaId);
+    final newProdutos = nota.produtos..addAll(produtos);
+    return updateNota(nota.copyWith(produtos: newProdutos));
   }
 
   @override
   Future<void> removeProdutoFromNota(String notaId, Produto produto) async {
-    final query = _firestore
-        .collection('notas')
-        .doc(notaId)
-        .collection('produtos')
-        .where('nome', isEqualTo: produto.nome)
-        .orderBy('createdAt', descending: true)
-        .limit(1);
+    if (await _isSplitted(notaId)) {
+      final query = _firestore
+          .collection('notas')
+          .doc(notaId)
+          .collection('produtos')
+          .where('nome', isEqualTo: produto.nome)
+          .orderBy('createdAt', descending: true)
+          .limit(1);
 
-    final snapshot = await query.get();
-    if (snapshot.docs.isNotEmpty) {
-      await snapshot.docs.first.reference.delete();
+      final snapshot = await query.get();
+      if (snapshot.docs.isNotEmpty) {
+        await snapshot.docs.first.reference.delete();
+      }
+      return;
     }
+
+    final nota = await getNota(notaId);
+    final produtos = nota.produtos;
+    final index = produtos.lastIndexWhere((p) => p.nome == produto.nome);
+    if (index != -1) {
+      produtos.removeAt(index);
+    }
+    return updateNota(nota.copyWith(produtos: produtos));
   }
 
   @override

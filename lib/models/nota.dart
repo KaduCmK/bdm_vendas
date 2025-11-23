@@ -87,43 +87,27 @@ class Nota extends Equatable {
   // Cria uma nota a partir dos dados do Firestore
   factory Nota.fromMap(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
-    final version = data['version'] ?? 1;
+    final isSplitted = data['isSplitted'] ?? false;
 
-    if (version == 1) {
-      return Nota.fromMapV1(doc);
+    List<Produto> produtos = [];
+    if (data.containsKey('produtos')) {
+      produtos = (data['produtos'] as List)
+          .map((p) => Produto.fromMap(p))
+          .toList();
     }
 
     return Nota(
       id: doc.id,
       dataCriacao: (data['dataCriacao'] as Timestamp).toDate(),
       dataFechamento: (data['dataFechamento'] as Timestamp?)?.toDate(),
-      produtos: const [], // Os produtos serão carregados da subcoleção
+      produtos: produtos, // Use the potentially populated list
       clienteId: data['clienteId'],
       status: NotaStatus.values.firstWhere(
         (e) => e.toString() == data['status'],
         orElse: () => NotaStatus.emAberto,
       ),
-      isSplitted: data['isSplitted'] ?? false,
-      pagamentos: const [], // Os pagamentos serão carregados da subcoleção
-    );
-  }
-
-  factory Nota.fromMapV1(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
-    return Nota(
-      id: doc.id,
-      dataCriacao: (data['dataCriacao'] as Timestamp).toDate(),
-      dataFechamento: (data['dataFechamento'] as Timestamp?)?.toDate(),
-      produtos: (data['produtos'] as List? ?? [])
-          .map((p) => Produto.fromMap(p))
-          .toList(),
-      clienteId: data['clienteId'],
-      status: NotaStatus.values.firstWhere(
-        (e) => e.toString() == data['status'],
-        orElse: () => NotaStatus.emAberto,
-      ),
-      isSplitted: false,
-      pagamentos: const [],
+      isSplitted: isSplitted,
+      pagamentos: const [], // Pagamentos are still loaded separately
     );
   }
 

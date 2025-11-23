@@ -6,7 +6,6 @@ import 'package:bdm_vendas/ui/shared/currency_input_formatter.dart';
 import 'package:bdm_vendas/ui/web/components/nota_card_header.dart';
 import 'package:bdm_vendas/ui/web/components/nota_card_product_list.dart';
 import 'package:bdm_vendas/ui/web/dialogs/fechar_conta_dialog.dart';
-import 'package:bdm_vendas/ui/web/dialogs/pagamento_parcial_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,7 +23,7 @@ class NotaCard extends StatelessWidget {
       builder:
           (_) => BlocProvider.value(
             value: BlocProvider.of<NotaBloc>(context),
-            child: FecharContaDialog(nota: nota),
+            child: FecharContaDialog(nota: nota, cliente: cliente),
           ),
     );
   }
@@ -36,7 +35,6 @@ class NotaCard extends StatelessWidget {
         children: [
           NotaCardHeader(cliente: cliente, nota: nota, isLoading: isLoading),
           const Divider(),
-          _ProductListHeader(),
           Expanded(child: ProductList(nota: nota)),
           const Divider(),
           _AddProductRow(nota: nota),
@@ -70,25 +68,10 @@ class NotaCard extends StatelessWidget {
                   ),
                   Row(
                     children: [
-                      IconButton(
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (_) => PagamentoParcialDialog(
-                              nota: nota,
-                              onConfirm: (pagamento) {
-                                context.read<NotaBloc>().add(AddPagamento(nota.id!, pagamento));
-                              },
-                            ),
-                          );
-                        },
-                        icon: const Icon(Icons.payment),
-                        tooltip: 'Pagamento Parcial',
-                      ),
                       ElevatedButton.icon(
                         onPressed: () => _showFecharContaDialog(context),
                         icon: const Icon(Icons.check_circle),
-                        label: const Text('Fechar a Conta'),
+                        label: const Text('Pagar / Fechar Conta'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green,
                           foregroundColor: Colors.white,
@@ -108,47 +91,6 @@ class NotaCard extends StatelessWidget {
     );
   }
 }
-
-class _ProductListHeader extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 2.0, vertical: 4.0),
-      child: Row(
-        children: [
-          Expanded(
-            flex: 6,
-            child: Text(
-              'Produto',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ),
-          Expanded(
-            flex: 2,
-            child: Text('Qtd.', style: TextStyle(fontWeight: FontWeight.bold)),
-          ),
-          Expanded(
-            flex: 3,
-            child: Text('Preço', style: TextStyle(fontWeight: FontWeight.bold)),
-          ),
-          Expanded(
-            flex: 3,
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: Text(
-                'Subtotal',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-          SizedBox(width: 75),
-        ],
-      ),
-    );
-  }
-}
-
-
 
 class _AddProductRow extends StatefulWidget {
   final Nota nota;
