@@ -114,6 +114,7 @@ class _NovaNotaDialogState extends State<NovaNotaDialog> {
                       clienteId: _selectedCliente!.id!,
                       dataCriacao: DateTime.now(),
                       produtos: [],
+                      isSplitted: true,
                     );
                     context.read<NotaBloc>().add(AddNota(newNota));
                     Navigator.of(context).pop();

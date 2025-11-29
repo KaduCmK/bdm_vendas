@@ -24,24 +24,33 @@ class NotaRepositoryImpl extends NotaRepository {
         .orderBy('dataCriacao', descending: true)
         .get();
 
-    final notas = await Future.wait(snapshot.docs.map((doc) async {
+    final futures = snapshot.docs.map((doc) async {
       var nota = Nota.fromMap(doc);
       if (nota.isSplitted) {
-        final produtosSnapshot =
-            await doc.reference.collection('produtos').get();
-        final produtos = produtosSnapshot.docs
-            .map((produtoDoc) => Produto.fromMap(produtoDoc.data()))
-            .toList();
-        
-        final pagamentosSnapshot = await doc.reference.collection('pagamentos').get();
-        final pagamentos = pagamentosSnapshot.docs.map((pagamentoDoc) => Pagamento.fromMap(pagamentoDoc)).toList();
+        try {
+          final produtosSnapshot =
+              await doc.reference.collection('produtos').get();
+          final produtos = produtosSnapshot.docs
+              .map((produtoDoc) => Produto.fromMap(produtoDoc.data()))
+              .toList();
 
-        nota = nota.copyWith(produtos: produtos, pagamentos: pagamentos);
+          final pagamentosSnapshot =
+              await doc.reference.collection('pagamentos').get();
+          final pagamentos = pagamentosSnapshot.docs
+              .map((pagamentoDoc) => Pagamento.fromMap(pagamentoDoc))
+              .toList();
+
+          nota = nota.copyWith(produtos: produtos, pagamentos: pagamentos);
+        } catch (e) {
+          // Log the error or handle it gracefully
+          // For now, we'll just return the nota without the sub-collections
+          print('Error fetching sub-collections for nota ${nota.id}: $e');
+        }
       }
       return nota;
-    }).toList());
+    }).toList();
 
-    return notas;
+    return Future.wait(futures);
   }
 
   @override
@@ -53,15 +62,25 @@ class NotaRepositoryImpl extends NotaRepository {
 
     var nota = Nota.fromMap(doc);
     if (nota.isSplitted) {
-      final produtosSnapshot = await doc.reference.collection('produtos').get();
-      final produtos = produtosSnapshot.docs
-          .map((produtoDoc) => Produto.fromMap(produtoDoc.data()))
-          .toList();
+      try {
+        final produtosSnapshot =
+            await doc.reference.collection('produtos').get();
+        final produtos = produtosSnapshot.docs
+            .map((produtoDoc) => Produto.fromMap(produtoDoc.data()))
+            .toList();
 
-      final pagamentosSnapshot = await doc.reference.collection('pagamentos').get();
-      final pagamentos = pagamentosSnapshot.docs.map((pagamentoDoc) => Pagamento.fromMap(pagamentoDoc)).toList();
+        final pagamentosSnapshot =
+            await doc.reference.collection('pagamentos').get();
+        final pagamentos = pagamentosSnapshot.docs
+            .map((pagamentoDoc) => Pagamento.fromMap(pagamentoDoc))
+            .toList();
 
-      nota = nota.copyWith(produtos: produtos, pagamentos: pagamentos);
+        nota = nota.copyWith(produtos:produtos, pagamentos: pagamentos);
+      } catch (e) {
+        // Log the error or handle it gracefully
+        // For now, we'll just return the nota without the sub-collections
+        print('Error fetching sub-collections for nota ${nota.id}: $e');
+      }
     }
 
     return nota;
@@ -75,16 +94,25 @@ class NotaRepositoryImpl extends NotaRepository {
       }
       var nota = Nota.fromMap(doc);
       if (nota.isSplitted) {
-        final produtosSnapshot =
-            await doc.reference.collection('produtos').get();
-        final produtos = produtosSnapshot.docs
-            .map((produtoDoc) => Produto.fromMap(produtoDoc.data()))
-            .toList();
+        try {
+          final produtosSnapshot =
+              await doc.reference.collection('produtos').get();
+          final produtos = produtosSnapshot.docs
+              .map((produtoDoc) => Produto.fromMap(produtoDoc.data()))
+              .toList();
 
-        final pagamentosSnapshot = await doc.reference.collection('pagamentos').get();
-        final pagamentos = pagamentosSnapshot.docs.map((pagamentoDoc) => Pagamento.fromMap(pagamentoDoc)).toList();
+          final pagamentosSnapshot =
+              await doc.reference.collection('pagamentos').get();
+          final pagamentos = pagamentosSnapshot.docs
+              .map((pagamentoDoc) => Pagamento.fromMap(pagamentoDoc))
+              .toList();
 
-        nota = nota.copyWith(produtos: produtos, pagamentos: pagamentos);
+          nota = nota.copyWith(produtos: produtos, pagamentos: pagamentos);
+        } catch (e) {
+          // Log the error or handle it gracefully
+          // For now, we'll just return the nota without the sub-collections
+          print('Error fetching sub-collections for nota ${nota.id}: $e');
+        }
       }
       return nota;
     });

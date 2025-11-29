@@ -32,6 +32,14 @@ class ShareNotaDialog extends StatelessWidget {
       ),
       actions: [
         TextButton(onPressed: () => context.pop(), child: const Text("Fechar")),
+        ElevatedButton(
+          onPressed: () {
+            final path = Uri.parse(notaUrl).path;
+            debugPrint('Navigating to path: $path');
+            context.go(path);
+          },
+          child: const Text("Abrir Link"),
+        ),
       ],
     );
   }

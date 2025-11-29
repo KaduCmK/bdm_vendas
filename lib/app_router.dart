@@ -1,3 +1,5 @@
+import 'package:bdm_vendas/bloc/nota/nota_bloc.dart';
+import 'package:bdm_vendas/service_locator.dart';
 import 'package:bdm_vendas/ui/shared/go_router_refresh_stream.dart';
 import 'package:bdm_vendas/ui/shared/screens/signin_screen.dart';
 import 'package:bdm_vendas/ui/web/screens/cardapio/cardapio_screen.dart';
@@ -6,6 +8,7 @@ import 'package:bdm_vendas/ui/web/screens/dashboard.dart';
 import 'package:bdm_vendas/ui/web/screens/view_nota/view_nota_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 final routes = GoRouter(
@@ -64,7 +67,10 @@ final routes = GoRouter(
     ),
     GoRoute(path: '/view-nota/:notaId', builder: (context, state) {
       final notaId = state.pathParameters['notaId']!;
-      return ViewNotaScreen(notaId: notaId);
+      return BlocProvider(
+        create: (context) => NotaBloc(repository: sl()),
+        child: ViewNotaScreen(notaId: notaId),
+      );
     }),
     GoRoute(path: '/', builder: (context, state) => Dashboard()),
   ],
